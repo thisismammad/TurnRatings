@@ -1,0 +1,197 @@
+{% extends 'admin-panel.html' %}
+
+{% block content %}
+        <div class="border bg-light container">
+            <div class="header">
+                <h4 class="header-title">مراکز درمانی</h4>
+            </div>
+            <div class="border bg-light content">
+                <div class="operation">
+                    <ul class="operation-group">
+                        <li class="operation-item">
+                            <div class="option-logo">
+                                <img class="img" src="{{url_for('static',filename='assets/logo/plus.png')}}">
+                            </div>
+                            <a href="#" class="operation-item__link" data-toggle="modal"
+                                data-target="#modal-add-item">افزودن</a>
+                            <form>
+                                <div class="modal fade" id="modal-add-item" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog col-6" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">افزودن مرکز درمانی</h5>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <div class="form-group col-md-6 col-12">
+                                                    <label>عنوان:</label>
+                                                    <input type="text" class="form-control" required>
+                                                </div>
+
+                                                <div class="form-group col-md-6 col-12">
+                                                    <label>شماره:</label>
+                                                    <input type="text" class="form-control" required>
+                                                </div>
+                                                <div class="form-group col-md-6 col-12">
+                                                    <label>شهر:</label>
+                                                    <select class="form-control" required>
+                                                        <option value="0" selected disabled hidden>شهر را انتخاب کنید ...</option>
+                                                        <option value="1">شهر1</option>
+                                                        <option value="2">شهر2</option>
+                                                        <option value="3">شهر3</option>
+                                                        <option value="4">شهر4</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group col-12">
+                                                    <label>آدرس:</label>
+                                                    <textarea class="form-control" required rows="5"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">بستن صفحه</button>
+                                                <button type="submit" class="btn btn-primary">ذخیره اطلاعات</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </li>
+                    </ul>
+                </div>
+                <div class="search">
+                    <input class="form-control col-md-4 col-12" type="text" placeholder="نام مرکز درمانی را وارد کنید">
+                </div>
+                <div class="result-container">
+
+                    <table class="table table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">عنوان</th>
+                                <th scope="col">شماره تماس</th>
+                                <th scope="col">آدرس</th>
+                                <th scope="col">عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>کلیک شهید محمدی</td>
+                                <td>076-33345496</td>
+                                <td>بلوار سیدجمال الدین اسدآبادی, میدان انقلاب به سمت چهارراه فاطمیه</td>
+                                <td>
+                                    <a style="text-decoration: none;" href="#" data-toggle="modal"
+                                    data-target="#modal-delete-item">حذف</a>
+
+                                    <span>|</span>
+
+                                    <a style="text-decoration: none;" href="#" data-toggle="modal"
+                                    data-target="#modal-edit-item">ویرایش</a>
+
+
+                                    <form>
+                                    <div class="modal fade" id="modal-delete-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h5 class="modal-title" id="exampleModalLabel">حذف مرکز درمانی</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                              ایا از حذف این آیتم اطمینان دارید؟
+                                            </div>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">لغو</button>
+                                              <button type="submit" class="btn btn-danger">حذف</button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </form>
+
+
+                                    <form>
+                                        <div class="modal fade" id="modal-edit-item" tabindex="-1" role="dialog"
+                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog col-6" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">ویرایش مرکز درمانی</h5>
+                                                    </div>
+                                                    <div class="modal-body">
+        
+                                                        <div class="form-group col-md-6 col-12">
+                                                            <label>عنوان:</label>
+                                                            <input type="text" class="form-control" required>
+                                                        </div>
+        
+                                                        <div class="form-group col-md-6 col-12">
+                                                            <label>شماره:</label>
+                                                            <input type="text" class="form-control" required>
+                                                        </div>
+                                                        <div class="form-group col-md-6 col-12">
+                                                            <label>شهر:</label>
+                                                            <select class="form-control" required>
+                                                                <option value="0" selected disabled hidden>شهر را انتخاب کنید ...</option>
+                                                                <option value="1">شهر1</option>
+                                                                <option value="2">شهر2</option>
+                                                                <option value="3">شهر3</option>
+                                                                <option value="4">شهر4</option>
+                                                            </select>
+                                                        </div>
+        
+                                                        <div class="form-group col-12">
+                                                            <label>آدرس:</label>
+                                                            <textarea class="form-control" required rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">بستن صفحه</button>
+                                                        <button type="submit" class="btn btn-primary">ذخیره اطلاعات</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+
+
+                                </td>
+
+                                
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td>کلیک شهید محمدی</td>
+                                <td>076-33345496</td>
+                                <td>بلوار سیدجمال الدین اسدآبادی, میدان انقلاب به سمت چهارراه فاطمیه</td>
+                                <td>
+                                    <a style="text-decoration: none;" href="#">حذف</a>
+                                    <span>|</span>
+                                    <a style="text-decoration: none;" href="#">ویرایش</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td>کلیک شهید محمدی</td>
+                                <td>076-33345496</td>
+                                <td>بلوار سیدجمال الدین اسدآبادی, میدان انقلاب به سمت چهارراه فاطمیه</td>
+                                <td>
+                                    <a style="text-decoration: none;" href="#">حذف</a>
+                                    <span>|</span>
+                                    <a style="text-decoration: none;" href="#">ویرایش</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+            <div class="footer"></div>
+        </div>
+{% endblock %}

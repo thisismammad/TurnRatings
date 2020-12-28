@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سامانه نوبت دهی سیب</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='styles/fonts.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='styles/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='styles/bootstrap_rtl.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='styles/style.css')}}">
+    <link rel="icon" href="data:,">
+</head>
+
+<body>
+    <div class="header-mask"></div>
+
+    <div class="wrapper" id="page-container">
+        <div class="border bg-light content">
+
+            <div class="header">
+                <div class="header__logo">
+                    <img lass="img" src="{{url_for('static',filename='assets/logo/logo.png')}}">
+                    
+                </div>
+                <div class="header__flag">
+                    <img class="img" src="{{url_for('static',filename='assets/logo/iran.png')}}">
+                </div>
+
+            </div>
+            <div class="navmenu">
+                <ul class="navmenu-group">
+                    <li class="navmenu-item"><a href="login.html" class="navmenu-item__link">صفحه اصلی</a></li>    
+                </ul>
+            </div>
+            <div class="introduction">
+                <p class="form__note">توجه :این سامانه صرفا به منظور نوبت گیری مراکز درمانی زیر نظر دانشگاه علوم
+                    پزشکی طراحی شده و درصورت
+                    ورود به سامانه حاضر، کلیه عملیات مربوط نوبت گیری و پیگیری و لغو نوبت امکان پذیر میباشد.</p>
+                <p class="form__help">این بخش مخصوص  کارمندان و پرسنل مراکز درمانی می باشد. کاربران با وارد کردن نام کاربری و کلمه عبور میتوانند وارد صفحه مدیریتی مخصوص به خود شوند.</p>
+            </div>
+            <form action="{{ url_for('admin_login', input='panel') }}">
+                <div class="form">
+                    
+
+                    <input type="text" class="form-control form__input" placeholder="نام کاربری">
+                    <input type="text" class="form-control form__input" placeholder="کلمه عبور">
+                    <input type="submit" class="btn btn-info from-buttom" value="ورود به پنل">
+                </div>
+            </form>
+            <div class="footer">
+                <div class="developer">
+                    طراحی و دیزاین امیرمسعود ظهوری - محمد داوری - مریم حاج حسینی
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

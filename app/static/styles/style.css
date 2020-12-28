@@ -1,0 +1,169 @@
+body {
+  font-size: 14px;
+  font-family: Vazir;
+  min-height: calc(100vh - 60px);;
+  direction: rtl;
+  text-align: right;
+  color: #000000;
+  background: #fff;
+  padding: 0;
+  margin: 0;
+}
+
+.header-mask {
+  background-color: #00af17;
+  height: 100px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: -1;
+}
+
+
+.wrapper , .wrapper-report {
+  margin: 30px auto;
+  width: calc(100% - 30px);
+  max-width: 700px;
+  -webkit-box-shadow: 0 8px 16px 0 rgba(51, 51, 51, 0.1);
+  box-shadow: 0 8px 16px 0 rgba(51, 51, 51, 0.205);
+  background: #fff;
+  border-radius: 12px;
+}
+.wrapper-report{
+  max-width: 1140px;
+}
+.content {
+  padding: 15px 30px 25px;
+  min-width: 200px;
+  min-height: 50px;
+}
+
+.header {
+  text-align: right;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0 10px;
+  height: auto;
+  line-height: 67px;
+}
+
+.footer {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form__note{
+  font-size: 15px;
+  color: #a11c1c;
+  text-align: justify;
+  width: 100%;
+}
+.form__help{
+  font-size: 15px;
+  font-weight: bold;
+  color: #000000;
+  width: 100%;
+  text-align: justify;
+}
+
+.form__input{
+  width: 100%;
+  margin: 20px 0;
+  
+}
+.from-buttom{
+  width: 100%;
+  margin: 10px 0;
+}
+.header__logo{
+width: 190px;
+height: auto;
+float: right;
+}
+.header__flag{
+  width: 70px;
+  height: 100px;
+  float: left;
+}
+.img{
+width: 100%;
+height: 100%;
+}
+.admin-panel{
+  padding: 5px;
+  color: #838383;
+  align-self: flex-start;
+}
+
+.admin-panel__link{
+  color: #838383;
+}
+.admin-panel__link:hover{
+  text-decoration: none;
+}
+
+.developer{
+  padding: 5px;
+  color: #999999;
+}
+
+.user-option-group{
+  display: flex;
+  width:100%;
+  padding: 5px;
+  flex-direction: column;
+}
+.option-item{
+  height: 50px;
+  border-radius: 10px;
+  margin: 5px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.option-item__link:hover{
+  color: #fff;
+  text-decoration: none;
+}
+.table{
+  text-align: center;
+  min-width: 780px;
+}
+
+.form_scroll{
+  width: 100%;
+  overflow-x: scroll;
+}
+.navmenu{
+  width: 100%;
+  height: auto;
+  display: inline-block;
+  margin: 10px 0;
+}
+.navmenu-group{
+  margin:0;
+  padding: 5px;
+  display: inline-block;
+}
+.navmenu-item{
+  list-style: none;
+  float: right;
+  margin: 0 5px;
+
+}
+
+.navmenu-item__link{
+  
+  color: #0062cc;
+}
+
+.navmenu-item__link:hover{
+  text-decoration: none;
+  color: #bd2130;
+}

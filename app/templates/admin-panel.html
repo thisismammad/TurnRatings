@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='styles/fonts.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='styles/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='styles/bootstrap_rtl.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='styles/admin-style.css')}}">
+    <link rel="icon" href="data:,">
+</head>
+<body>
+    <!-- <div class="header-mask"></div> -->
+    <div class="container-fluid">
+        <div class="nav">
+            <div class="nav-logo">
+                <div class="nav__logo">
+                   <img lass="img" src="{{url_for('static',filename='assets/logo/apple-logo.png')}}">
+                </div>
+            </div>
+
+            <div class="nav-menu">
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='medical')}}">مراکز درمانی</a>
+                    </div>
+                </div>
+
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='city') }}">شهرها</a>
+                    </div>
+                </div>
+
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='specialty')}}">تخصص ها</a>
+                    </div>
+                </div>
+
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='doctor') }}">پزشکان</a>
+                    </div>
+                </div>
+
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="#">بیماران</a>
+                    </div>
+                </div>
+
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='user') }}">کاربران</a>
+                    </div>
+                </div>
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='report')}}">گزارشات</a>
+                    </div>
+                </div>
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='reception')}}">پذیرش</a>
+                    </div>
+                </div>
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='turn') }}">نوبت دهی</a>
+                    </div>
+                </div>
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='changepassword') }}">تغییر کلمه عبور</a>
+                    </div>
+                </div>
+
+                <div class="nav-menu-group">
+                    <div class="nav-group-item">
+                        <a class="nav-group-item__link" href="{{ url_for( 'login' ) }}">خروج</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% block content %} {% endblock %}
+    </div>
+
+
+</body>
+<script src="{{url_for('static',filename='js/jquery-3.5.1.slim.min.js')}}"></script>
+<script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
+<script src="{{url_for('static',filename='js/js.js')}}"></script>
+</html>

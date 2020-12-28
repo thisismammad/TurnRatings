@@ -1,0 +1,112 @@
+{% extends 'admin-panel.html' %}
+
+{% block content %}
+        <div class="border bg-light container">
+            <div class="header">
+                <h4 class="header-title">گزارش گیری</h4>
+            </div>
+            <div class="border bg-light content">
+
+                <form>
+                    <div class="search">
+
+                        <div class="form-group col-md-3 col-12">
+                            <select class="form-control" required>
+                                <option value="0" selected disabled hidden>شهر را انتخاب کنید ...</option>
+                                <option value="1">شهر1</option>
+                                <option value="2">شهر2</option>
+                                <option value="3">شهر3</option>
+                                <option value="4">شهر4</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3 col-12">
+                            <select class="form-control" required>
+                                <option value="0" selected disabled hidden>مرکز درمانی را انتخاب کنید ...</option>
+                                <option value="1">1مرکز</option>
+                                <option value="2">2مرکز</option>
+                                <option value="3">3مرکز</option>
+                                <option value="4">4مرکز</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3 col-12">
+                            <select class="form-control" required>
+                                <option value="0" selected disabled hidden>تخصص را انتخاب کنید ...</option>
+                                <option value="1">1تخصص</option>
+                                <option value="2">2تخصص</option>
+                                <option value="3">3تخصص</option>
+                                <option value="4">4تخصص</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3 col-12">
+                            <select class="form-control" required>
+                                <option value="0" selected disabled hidden>پزشک را انتخاب کنید ...</option>
+                                <option value="1">1پزشک</option>
+                                <option value="2">2پزشک</option>
+                                <option value="3">3پزشک</option>
+                                <option value="4">4پزشک</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4 col-12">
+                            <label>تاریخ شروع:</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                        <div class="form-group col-md-4 col-12">
+                            <label>تاریخ پایان:</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+
+                        <div class="form-group col-md-4 col-12 d-flex align-items-end">
+                            <input type="submit" class="btn btn-success from-buttom " value="جستجو">
+                        </div>
+
+                    </div>
+                </form>
+                <div class="result-container">
+
+                    <table class="table table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">نام</th>
+                                <th scope="col">نام خانوادگی</th>
+                                <th scope="col">پزشک</th>
+                                <th scope="col">مرکز درمانی</th>
+                                <th scope="col">تاریخ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">1</th>
+                                <td>امیرمسعود</td>
+                                <td>ظهوری</td>
+                                <td>محمد داوری</td>
+                                <td>کلینک 22 بهمن</td>
+                                <td>2020-10-10</td>
+
+
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
+                                <td>امیرمسعود</td>
+                                <td>ظهوری</td>
+                                <td>محمد داوری</td>
+                                <td>کلینک 22 بهمن</td>
+                                <td>2020-10-10</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">3</th>
+                                <td>امیرمسعود</td>
+                                <td>ظهوری</td>
+                                <td>محمد داوری</td>
+                                <td>کلینک 22 بهمن</td>
+                                <td>2020-10-10</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+            <div class="footer"></div>
+        </div>
+{% endblock %}
