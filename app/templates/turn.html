@@ -16,6 +16,9 @@
     <div class="header-mask"></div>
 
     <div class="wrapper" id="page-container">
+     {% for category , message in get_flashed_messages(with_categories = true) %}
+            {{ message }}
+            {% endfor %}
         <div class="content">
 
             <div class="header">
@@ -40,9 +43,8 @@
                     ورود به سامانه حاضر، کلیه عملیات مربوط نوبت گیری و پیگیری و لغو نوبت امکان پذیر میباشد.</p>
                 <p class="form__help">اطلاعات خواسته شده را وارد کنید سپس روی دکمه ثبت نوبت کلیک کنید.</p>
             </div>
-            <form action="{{ url_for('add_turn') }} " method="POST">
+            <form action="{{ url_for('add_turn', user_NC = values['NC'] ) }} " method="POST">
                 <div class="form">
-                    
 
                     <div class="form-group">
                         <label>تاریخ :</label>
@@ -51,7 +53,7 @@
 
                     <div class="form-group">
                         <label>کد ملی :</label>
-                        <input type="text" name="NC" value="{{ values['NC'] }}" class="form-control" disabled>
+                        <input type="text"  value="{{ values['NC'] }}" name="NC" class="form-control" disabled>
                     </div>
 
                     <div class="form-group">

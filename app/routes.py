@@ -221,18 +221,22 @@ def add_user():
     return redirect(url_for('admin_login', input='user'))
 
 
-@app.route('/add-turn', methods=['GET', 'POST'])
-def add_turn():
+@app.route('/add-turn<user_NC>', methods=['GET', 'POST'])
+def add_turn(user_NC):
+    print(user_NC)
     if request.method == 'POST':
-        if not request.form['NC'] \
+        if not user_NC \
                 and not request.form['phone'] \
                 and not request.form['city'] \
                 and not request.form['medical'] \
                 and not request.form['speciality'] \
                 and not request.form['doctor']:
             flash('پر کردن تمام فیلد ها ضروری است', category='danger')
+
         else:
-            sick = Sick.query.filter_by(NC=int(request.form['NC'])).first
+            print("else")
+            sick = Sick.query.filter_by(NC=int(user_NC)).first()
+            print(sick)
             turn = Turn(sick=sick.id,
                         doctor=int(request.form['doctor']),
                         medical=int(request.form['medical']))

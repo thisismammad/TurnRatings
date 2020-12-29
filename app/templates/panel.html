@@ -45,7 +45,6 @@
                     روی گزینه نوبت گیری کلیک کنید.</p>
             </div>
             <div class="form">
-                <H1>{{ values['NC'] }}</H1>
                 <div class="user-option-group">
                     <a href="{{ url_for('user_report') }}" class="bg-success option-item option-item__link">پیگیر نوبت</a>
                     <a href="{{ url_for('user_turn' , user_NC = values['NC'] ) }}" methods="POST" class="bg-primary option-item option-item__link">نوبت دهی</a>
