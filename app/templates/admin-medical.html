@@ -2,6 +2,9 @@
 
 {% block content %}
         <div class="border bg-light container">
+         {% for category , message in get_flashed_messages(with_categories = true) %}
+            {{ message }}
+            {% endfor %}
             <div class="header">
                 <h4 class="header-title">مراکز درمانی</h4>
             </div>
@@ -14,7 +17,7 @@
                             </div>
                             <a href="#" class="operation-item__link" data-toggle="modal"
                                 data-target="#modal-add-item">افزودن</a>
-                            <form>
+                            <form action="{{ url_for('add_medical') }}" method="POST">
                                 <div class="modal fade" id="modal-add-item" tabindex="-1" role="dialog"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog col-6" role="document">
@@ -25,28 +28,27 @@
                                             <div class="modal-body">
 
                                                 <div class="form-group col-md-6 col-12">
-                                                    <label>عنوان:</label>
-                                                    <input type="text" class="form-control" required>
+                                                    <label>نام:</label>
+                                                    <input type="text" class="form-control" name="name" required>
                                                 </div>
 
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>شماره:</label>
-                                                    <input type="text" class="form-control" required>
+                                                    <input type="text" class="form-control" name="phone" required>
                                                 </div>
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>شهر:</label>
-                                                    <select class="form-control" required>
+                                                    <select class="form-control" name="city" required>
                                                         <option value="0" selected disabled hidden>شهر را انتخاب کنید ...</option>
-                                                        <option value="1">شهر1</option>
-                                                        <option value="2">شهر2</option>
-                                                        <option value="3">شهر3</option>
-                                                        <option value="4">شهر4</option>
+                                                        {% for city in values['cites'] %}
+                                                        <option value="{{ city.id }}">{{ city.name }}</option>
+                                                        {% endfor %}
                                                     </select>
                                                 </div>
 
                                                 <div class="form-group col-12">
                                                     <label>آدرس:</label>
-                                                    <textarea class="form-control" required rows="5"></textarea>
+                                                    <textarea class="form-control" name="address" required rows="5"></textarea>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -71,18 +73,21 @@
                         <thead class="thead-dark">
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">عنوان</th>
+                                <th scope="col">نام</th>
                                 <th scope="col">شماره تماس</th>
+                                <th scope="col">شهر</th>
                                 <th scope="col">آدرس</th>
                                 <th scope="col">عملیات</th>
                             </tr>
                         </thead>
                         <tbody>
+                        {% for medical in values['data'] %}
                             <tr>
                                 <th scope="row">1</th>
-                                <td>کلیک شهید محمدی</td>
-                                <td>076-33345496</td>
-                                <td>بلوار سیدجمال الدین اسدآبادی, میدان انقلاب به سمت چهارراه فاطمیه</td>
+                                <td>{{ medical['name'] }}</td>
+                                <td>{{ medical['phone'] }}</td>
+                                <td>{{ medical['city'] }}</td>
+                                <td>{{ medical['address'] }}</td>
                                 <td>
                                     <a style="text-decoration: none;" href="#" data-toggle="modal"
                                     data-target="#modal-delete-item">حذف</a>
@@ -162,30 +167,8 @@
 
                                 </td>
 
-                                
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>کلیک شهید محمدی</td>
-                                <td>076-33345496</td>
-                                <td>بلوار سیدجمال الدین اسدآبادی, میدان انقلاب به سمت چهارراه فاطمیه</td>
-                                <td>
-                                    <a style="text-decoration: none;" href="#">حذف</a>
-                                    <span>|</span>
-                                    <a style="text-decoration: none;" href="#">ویرایش</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>کلیک شهید محمدی</td>
-                                <td>076-33345496</td>
-                                <td>بلوار سیدجمال الدین اسدآبادی, میدان انقلاب به سمت چهارراه فاطمیه</td>
-                                <td>
-                                    <a style="text-decoration: none;" href="#">حذف</a>
-                                    <span>|</span>
-                                    <a style="text-decoration: none;" href="#">ویرایش</a>
-                                </td>
-                            </tr>
+
+                        {% endfor %}
                         </tbody>
                     </table>
 

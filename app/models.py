@@ -1,44 +1,34 @@
 from datetime import datetime
-from itsdangerous import TimedJSONWebSignatureSerializer as serializer
-from app import db, app
+from app import db, login_manager
 from flask_login import UserMixin
 
 
-#@login_manager.user_loader
-#def load_user(user_id):
-    #return User.query.get(int(user_id))
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
 
 
 class User(db.Model, UserMixin):
     id = db.Column(db.BigInteger, db.ForeignKey("employee.id"), nullable=False, primary_key=True)
     password = db.Column(db.String(60), nullable=False)
 
-    def get_reset_token(self, expires_sec=1800):  # 30 minute
-        s = serializer(app.config['SECRET_KEY'], expires_sec)
-        return s.dumps({'user_id': self.id}).decode('utf-8')
-
-    @staticmethod
-    def verify_reset_token(token):
-        s = serializer(app.config['SECRET_KEY'])
-        try:
-            user_id = s.loads(token)['user_id']
-        except:
-            return None
-        return User.query.get(user_id)
+    def __repr__(self):
+        return f"User({self.id}','{self.password}' )"
 
 
-class Employee(db.Model, UserMixin):
+class Employee(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
     last_name = db.Column(db.String(60), nullable=False)
     NC = db.Column(db.BigInteger, nullable=False)
     phone = db.Column(db.BigInteger, nullable=False)
+    medical = db.Column(db.Integer, db.ForeignKey("medical.id"), nullable=False)
 
     def __repr__(self):
         return f"Employee({self.id}','{self.name}','{self.last_name}','{self.NC}','{self.phone}' )"
 
 
-class Sick(db.Model, UserMixin):
+class Sick(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(20), nullable=True)
     last_name = db.Column(db.String(60), nullable=True)
@@ -49,7 +39,7 @@ class Sick(db.Model, UserMixin):
         return f"Sick('{self.id}','{self.name}','{self.last_name}','{self.NC}','{self.phone}' )"
 
 
-class Doctor(db.Model, UserMixin):
+class Doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(20), nullable=False)
     last_name = db.Column(db.String(60), nullable=False)
@@ -62,7 +52,7 @@ class Doctor(db.Model, UserMixin):
         return f"Doctor({self.id}','{self.name}','{self.last_name}','{self.NC}','{self.phone}','{self.specialty}','{self.medical}')"
 
 
-class Medical(db.Model, UserMixin):
+class Medical(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.Text, nullable=False)
     address = db.Column(db.String(500), nullable=False)
@@ -73,19 +63,19 @@ class Medical(db.Model, UserMixin):
         return f"Medical('{self.id}','{self.name}','{self.address}','{self.phone}','{self.city}'  )"
 
 
-class Turn(db.Model, UserMixin):
+class Turn(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     sick = db.Column(db.Integer, db.ForeignKey("sick.id"), nullable=False)
     doctor = db.Column(db.Integer, db.ForeignKey("doctor.id"), nullable=False)
     medical = db.Column(db.Integer, db.ForeignKey("medical.id"), nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    status = db.Column(db.SmallInteger, nullable=False)
+    status = db.Column(db.SmallInteger, nullable=False , default=1)
 
     def __repr__(self):
         return f"Turn('{self.id}','{self.sick}','{self.doctor}','{self.medical}','{self.date}' ,'{self.status}' )"
 
 
-class City(db.Model, UserMixin):
+class City(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(200), nullable=False)
 
@@ -93,7 +83,7 @@ class City(db.Model, UserMixin):
         return f"City('{self.id}','{self.name}')"
 
 
-class Specialty(db.Model, UserMixin):
+class Specialty(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(500), nullable=False)
 
@@ -101,12 +91,10 @@ class Specialty(db.Model, UserMixin):
         return f"Specialty('{self.id}','{self.name}')"
 
 
-class EMMedical(db.Model, UserMixin):
+class EMMedical(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     employee = db.Column(db.BigInteger, db.ForeignKey("employee.id"), nullable=False)
     medical = db.Column(db.Integer, db.ForeignKey("medical.id"), nullable=False)
 
     def __repr__(self):
         return f"Specialty('{self.id}','{self.employee}','{self.medical}')"
-
-

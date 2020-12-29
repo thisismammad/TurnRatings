@@ -2,6 +2,9 @@
 
 {% block content %}
         <div class="border bg-light container">
+         {% for category , message in get_flashed_messages(with_categories = true) %}
+            {{ message }}
+            {% endfor %}
             <div class="header">
                 <h4 class="header-title"> پزشکان</h4>
             </div>
@@ -14,7 +17,7 @@
                             </div>
                             <a href="#" class="operation-item__link" data-toggle="modal"
                                 data-target="#modal-add-item">افزودن</a>
-                            <form>
+                            <form action="{{ url_for('add_doctor') }}" method="POST">
                                 <div class="modal fade" id="modal-add-item" tabindex="-1" role="dialog"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog col-6" role="document">
@@ -26,42 +29,40 @@
 
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>نام:</label>
-                                                    <input type="text" class="form-control" required>
+                                                    <input type="text" class="form-control" name="name" required>
                                                 </div>
 
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>نام خانوادگی:</label>
-                                                    <input type="text" class="form-control" required>
+                                                    <input type="text" class="form-control" name="last_name" required>
                                                 </div>
 
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>شماره تماس:</label>
-                                                    <input type="text" class="form-control" required>
+                                                    <input type="text" class="form-control" name="phone" required>
                                                 </div>
 
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>کدملی :</label>
-                                                    <input type="text" class="form-control" required>
+                                                    <input type="text" class="form-control" name="NC" required>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label>تخصص :</label>
-                                                    <select class="form-control" required>
+                                                    <select class="form-control" name="speciality" required>
                                                         <option value="0" selected disabled hidden>تخصص را انتخاب کنید ...</option>
-                                                        <option value="1">1تخصص</option>
-                                                        <option value="2">2تخصص</option>
-                                                        <option value="3">3تخصص</option>
-                                                        <option value="4">4تخصص</option>
+                                                        {% for sp in values['specialties'] %}
+                                                        <option value="{{ sp.id }}">{{ sp.name }}</option>
+                                                        {% endfor %}
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
                                                     <label>مرکز درمانی :</label>
-                                                    <select class="form-control" required>
+                                                    <select class="form-control" name="medical" required>
                                                         <option value="0" selected disabled hidden>مرکز درمانی را انتخاب کنید ...</option>
-                                                        <option value="1">1مرکز</option>
-                                                        <option value="2">2مرکز</option>
-                                                        <option value="3">3مرکز</option>
-                                                        <option value="4">4مرکز</option>
+                                                        {% for medical in values['medicals'] %}
+                                                        <option value="{{ medical.id }}">{{ medical.name }}</option>
+                                                        {% endfor %}
                                                     </select>
                                                 </div>
 
@@ -88,20 +89,25 @@
                         <thead class="thead-dark">
                             <tr>
                                 <th scope="col">#</th>
+                                <th scope="col">کد ملی</th>
                                 <th scope="col">نام</th>
                                 <th scope="col">نام خانوادگی</th>
                                 <th scope="col">تخصص</th>
+                                <th scope="col">شماره تماس</th>
                                 <th scope="col">مرکز درمانی</th>
                                 <th scope="col">عملیات</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
+                                {% for doctor in values['data'] %}
                                 <th scope="row">1</th>
-                                <td>امیرمسعود</td>
-                                <td>ظهوری</td>
-                                <td>قلب</td>
-                                <td>کلینک 22 بهمن</td>
+                                <td>{{ doctor['NC'] }}</td>
+                                <td>{{ doctor['name'] }}</td>
+                                <td>{{ doctor['last_name'] }}</td>
+                                <td>{{ doctor['speciality'] }}</td>
+                                <td>{{ doctor['phone'] }}</td>
+                                <td>{{ doctor['medical'] }}</td>
                                 <td>
                                     <a style="text-decoration: none;" href="#" data-toggle="modal"
                                     data-target="#modal-delete-item">حذف</a>
@@ -111,7 +117,7 @@
                                     <a style="text-decoration: none;" href="#" data-toggle="modal"
                                     data-target="#modal-edit-item">ویرایش</a>
 
-
+                                </td>
                                     <form>
                                     <div class="modal fade" id="modal-delete-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
@@ -198,30 +204,7 @@
 
                                 
                             </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>امیرمسعود</td>
-                                <td>ظهوری</td>
-                                <td>قلب</td>
-                                <td>کلینک 22 بهمن</td>
-                                <td>
-                                    <a style="text-decoration: none;" href="#">حذف</a>
-                                    <span>|</span>
-                                    <a style="text-decoration: none;" href="#">ویرایش</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>امیرمسعود</td>
-                                <td>ظهوری</td>
-                                <td>قلب</td>
-                                <td>کلینک 22 بهمن</td>
-                                <td>
-                                    <a style="text-decoration: none;" href="#">حذف</a>
-                                    <span>|</span>
-                                    <a style="text-decoration: none;" href="#">ویرایش</a>
-                                </td>
-                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
 

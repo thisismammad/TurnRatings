@@ -3,11 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "6d62e6cc63c1a394af6745eb118b4ab1"
+app.config["SECRET_KEY"] = "6d62e6dcc63c1a394af6745eb118b4ab1"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///DataBase.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
-#login_manager = LoginManager(app)
-#login_manager.login_view = 'login'
-#login_manager.login_view = 'login'
-from app import routes, db
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+from app import routes

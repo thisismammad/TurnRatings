@@ -7,7 +7,7 @@
     <title>نوبت دهی</title>
     <link rel="stylesheet" href="{{url_for('static',filename='styles/fonts.css')}}">
     <link rel="stylesheet" href="{{url_for('static',filename='styles/bootstrap.min.css')}}">
-    <link rel="stylesheet" href="{{url_for('static',filename='styles/bootstrap.rtl.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='styles/bootstrap_rtl.css')}}">
     <link rel="stylesheet" href="{{url_for('static',filename='styles/style.css')}}">
     <link rel="icon" href="data:,">
 </head>
@@ -31,7 +31,7 @@
             <div class="navmenu">
                 <ul class="navmenu-group">
                     <li class="navmenu-item"><a href="{{ url_for('panel') }}" class="navmenu-item__link">میز خدمات</a></li>
-                    <li class="navmenu-item"><a href="{{ url_for('login') }}" class="navmenu-item__link">خروج</a></li>
+                    <li class="navmenu-item"><a href="{{ url_for('home') }}" class="navmenu-item__link">خروج</a></li>
                 </ul>
             </div>
             <div class="introduction">
@@ -40,59 +40,55 @@
                     ورود به سامانه حاضر، کلیه عملیات مربوط نوبت گیری و پیگیری و لغو نوبت امکان پذیر میباشد.</p>
                 <p class="form__help">اطلاعات خواسته شده را وارد کنید سپس روی دکمه ثبت نوبت کلیک کنید.</p>
             </div>
-            <form>
+            <form action="{{ url_for('add_turn') }} " method="POST">
                 <div class="form">
                     
 
                     <div class="form-group">
                         <label>تاریخ :</label>
-                        <input type="date" class="form-control" disabled>
+                        <input type="text" value="{{ values['date'] }}" class="form-control" disabled>
                     </div>
 
                     <div class="form-group">
                         <label>کد ملی :</label>
-                        <input type="text" class="form-control" disabled>
+                        <input type="text" name="NC" value="{{ values['NC'] }}" class="form-control" disabled>
                     </div>
 
                     <div class="form-group">
                         <label>موبایل:</label>
-                        <input type="tel" class="form-control">
+                        <input type="tel" class="form-control" name="phone">
                     </div>
 
                     <div class="form-group">
-                        <select class="form-control" required>
+                        <select class="form-control"  name="city" required>
                             <option value="0" selected disabled hidden>شهر را انتخاب کنید ...</option>
-                            <option value="1">شهر1</option>
-                            <option value="2">شهر2</option>
-                            <option value="3">شهر3</option>
-                            <option value="4">شهر4</option>
+                            {% for city in values['cites'] %}
+                            <option value="{{ city.id }}">{{ city.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <select class="form-control" required>
+                        <select class="form-control" name="medical" required>
                             <option value="0" selected disabled hidden>مرکز درمانی را انتخاب کنید ...</option>
-                            <option value="1">1مرکز</option>
-                            <option value="2">2مرکز</option>
-                            <option value="3">3مرکز</option>
-                            <option value="4">4مرکز</option>
+                            {% for medical in values['medicals'] %}
+                            <option value="{{ medical.id }}">{{ medical.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <select class="form-control" required>
+                        <select class="form-control" name="speciality" required>
                             <option value="0" selected disabled hidden>تخصص را انتخاب کنید ...</option>
-                            <option value="1">1تخصص</option>
-                            <option value="2">2تخصص</option>
-                            <option value="3">3تخصص</option>
-                            <option value="4">4تخصص</option>
+                            {% for sp in values['specialties'] %}
+                            <option value="{{ sp.id }}">{{ sp.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <select class="form-control" required>
+                        <select class="form-control" name="doctor" required>
                             <option value="0" selected disabled hidden>پزشک را انتخاب کنید ...</option>
-                            <option value="1">1پزشک</option>
-                            <option value="2">2پزشک</option>
-                            <option value="3">3پزشک</option>
-                            <option value="4">4پزشک</option>
+                            {% for doctor in values['doctors'] %}
+                            <option value="{{ doctor.id }}">{{ doctor.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
 

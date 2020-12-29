@@ -34,11 +34,9 @@
                 <p class="form__help">برای ورود به سامانه کافی است کد ملی ده رقمی خود را وارد کنید و سپس روی دکمه
                     ورود به پنل کلیک کنید.</p>
             </div>
-            <form action=" {{ url_for( 'panel' ) }}">
+            <form action=" {{ url_for( 'panel' ) }}" method="POST">
                 <div class="form">
-                    
-
-                    <input type="text" class="form-control form__input" placeholder="کد ملی خود را وارد کنید...">
+                    <input type="text" class="form-control form__input" name="NC" required placeholder="کد ملی خود را وارد کنید...">
                     <input type="submit" class="btn btn-success from-buttom" value="ورود به پنل">
                 </div>
             </form>
