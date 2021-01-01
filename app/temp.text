@@ -1,0 +1,82 @@
+    if request.method == 'POST':
+        if not request.form['id'] \
+                or not request.form['name'] or any(char.isdigit() for char in request.form['name']) \
+                or not request.form['last_name'] or any(char.isdigit() for char in request.form['last_name']) \
+                or not request.form['NC'] \
+                or not request.form['phone'] \
+                or not request.form['position'] or request.form['position'] == '0' \
+                or not request.form['medical'] or request.form['medical'] == '0':
+            flash('پر کردن تمام فیلد ها ضروری است.', category='danger')
+            flash(' نام و نام خانوادگی نباید شامل عدد باشد', category='danger')
+            return redirect(url_for('admin_login', input='user'))
+        else:
+            try:
+                user_id = int(request.form['id'])
+                try:
+                    NC = int(request.form['NC'])
+                    try:
+                        phone = int(request.form['phone'])
+                        if len(str(user_id)) == 10:
+                            if len(str(NC)) == 10:
+                                if len(str(phone)) == 11:
+                                    employee = Employee(id=user_id,
+                                                        NC=NC,
+                                                        name=request.form['name'],
+                                                        last_name=request.form['last_name'],
+                                                        phone=phone,
+                                                        position=int(request.form['position']),
+                                                        medical=request.form['medical'])
+                                    user = User(id=employee.id,
+                                                password=employee.NC)
+                                    db.session.add(employee)
+                                    db.session.add(user)
+                                    db.session.commit()
+                                    flash('کارمند با موفقت اضافه شد', 'success')
+                                    return redirect(url_for('admin_login', input='user'))
+                                else:
+                                    flash(
+                                        'شماره تلفن وارد شده صحیح نیست. شماره را بدون +98 وارد کرده و شماره تلفن ثابت را نیز '
+                                        'با 076 '
+                                        'وارد کنید', category='danger')
+                                    return redirect(url_for('admin_login', input='user'))
+                            else:
+                                flash('کدملی وارد شده صحیح نیست . کدملی باید دقیقا 10 رقم عددی باشد', category='danger')
+                                return redirect(url_for('admin_login', input='user'))
+                        else:
+                            flash('کدپرسنلی وارد شده صحیح نیست . کدپرسنلی باید دقیقا 10 رقم عددی باشد',
+                                  category='danger')
+                            return redirect(url_for('admin_login', input='user'))
+                    except:
+                        flash(
+                            'شماره تلفن وارد شده صحیح نیست. شماره را بدون +98 وارد کرده و شماره تلفن ثابت را نیز با 076 '
+                            'وارد کنید', category='danger')
+                        return redirect(url_for('admin_login', input='user'))
+
+                except:
+                    flash('کدملی وارد شده صحیح نیست . کدملی باید دقیقا 10 رقم عددی باشد', category='danger')
+                    return redirect(url_for('admin_login', input='user'))
+            except:
+                flash('کدپرسنلی وارد شده صحیح نیست . کدپرسنلی باید دقیقا 10 رقم عددی باشد', category='danger')
+                return redirect(url_for('admin_login', input='user'))
+    return redirect(url_for('admin_login', input='user'))
+
+
+
+
+
+
+
+
+
+
+        if request.method == "POST":
+        new_employee = Employee.query.filter_by(id=int(user_id)).first()
+        new_employee.name = request.form["new_name"]
+        new_employee.last_name = request.form["new_last_name"]
+        new_employee.NC = int(request.form["new_NC"])
+        new_employee.phone = int(request.form["new_phone"])
+        new_employee.medical = int(request.form["new_medical"])
+        new_employee.position = int(request.form["new_position"])
+        db.session.commit()
+        return redirect(url_for("admin_login", input="user"))
+    return redirect(url_for("admin_login", input="user"))

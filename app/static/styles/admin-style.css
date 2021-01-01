@@ -117,8 +117,9 @@ body {
 }
 .result-container {
     display: flex;
+    height: 400px;
     width: 100%;
-    overflow-x: scroll;
+    overflow: scroll;
 }
 
 .table {

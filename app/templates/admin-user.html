@@ -4,7 +4,21 @@
 
     <div class="border bg-light container">
         {% for category , message in get_flashed_messages(with_categories = true) %}
-            {{ message }}
+            {% if category == "success" %}
+                <div id="alert" class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% elif category == "danger" %}
+                <div id="alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
         {% endfor %}
         <div class="header">
             <h4 class="header-title">حساب های کاربری</h4>
@@ -55,7 +69,7 @@
                                             <div class="form-group col-12">
                                                 <label>عنوان کاربری :</label>
                                                 <select class="form-control" name="position" required>
-                                                    <option value="0" selected disabled hidden>عنوان کاربری را انتخاب
+                                                    <option value="0" selected hidden>عنوان کاربری را انتخاب
                                                         کنید ...
                                                     </option>
                                                     <option value="1">مدیر مرکز درمانی</option>
@@ -66,7 +80,7 @@
                                             <div class="form-group col-12">
                                                 <label>مرکز درمانی :</label>
                                                 <select class="form-control" name="medical" required>
-                                                    <option value="0" selected disabled hidden>مرکز درمانی را انتخاب
+                                                    <option value="0" selected hidden>مرکز درمانی را انتخاب
                                                         کنید ...
                                                     </option>
                                                     {% for medical in values['medicals'] %}
