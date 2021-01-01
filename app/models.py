@@ -1,11 +1,11 @@
-from datetime import datetime
+import datetime
 from app import db, login_manager
 from flask_login import UserMixin
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get(user_id)
+    return User.query.get(int(user_id))
 
 
 class User(db.Model, UserMixin):
@@ -23,6 +23,8 @@ class Employee(db.Model):
     NC = db.Column(db.BigInteger, nullable=False)
     phone = db.Column(db.BigInteger, nullable=False)
     medical = db.Column(db.Integer, db.ForeignKey("medical.id"), nullable=False)
+    position = db.Column(db.SmallInteger, nullable=False)
+    status = db.Column(db.SmallInteger, default=1)
 
     def __repr__(self):
         return f"Employee({self.id}','{self.name}','{self.last_name}','{self.NC}','{self.phone}' )"
@@ -47,6 +49,7 @@ class Doctor(db.Model):
     phone = db.Column(db.BigInteger, nullable=False)
     medical = db.Column(db.Integer, db.ForeignKey("medical.id"), nullable=False)
     specialty = db.Column(db.Integer, db.ForeignKey("specialty.id"), nullable=False)
+    status = db.Column(db.SmallInteger, default=1)
 
     def __repr__(self):
         return f"Doctor({self.id}','{self.name}','{self.last_name}','{self.NC}','{self.phone}','{self.specialty}','{self.medical}')"
@@ -58,6 +61,7 @@ class Medical(db.Model):
     address = db.Column(db.String(500), nullable=False)
     phone = db.Column(db.BigInteger, nullable=False)
     city = db.Column(db.Integer, db.ForeignKey("city.id"), nullable=False)
+    status = db.Column(db.SmallInteger, default=1)
 
     def __repr__(self):
         return f"Medical('{self.id}','{self.name}','{self.address}','{self.phone}','{self.city}'  )"
@@ -68,8 +72,8 @@ class Turn(db.Model):
     sick = db.Column(db.Integer, db.ForeignKey("sick.id"), nullable=False)
     doctor = db.Column(db.Integer, db.ForeignKey("doctor.id"), nullable=False)
     medical = db.Column(db.Integer, db.ForeignKey("medical.id"), nullable=False)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.now().strftime("%Y/%m/%d"))
-    status = db.Column(db.SmallInteger, nullable=False , default=1)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.date.today())
+    status = db.Column(db.SmallInteger, nullable=False, default=1)
 
     def __repr__(self):
         return f"Turn('{self.id}','{self.sick}','{self.doctor}','{self.medical}','{self.date}' ,'{self.status}' )"
@@ -78,6 +82,7 @@ class Turn(db.Model):
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(200), nullable=False)
+    status = db.Column(db.SmallInteger, default=1)
 
     def __repr__(self):
         return f"City('{self.id}','{self.name}')"
@@ -86,6 +91,7 @@ class City(db.Model):
 class Specialty(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(500), nullable=False)
+    status = db.Column(db.SmallInteger, default=1)
 
     def __repr__(self):
         return f"Specialty('{self.id}','{self.name}')"

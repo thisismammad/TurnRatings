@@ -1,75 +1,214 @@
 {% extends 'admin-panel.html' %}
 
 {% block content %}
-        <div class="border bg-light container">
-         {% for category , message in get_flashed_messages(with_categories = true) %}
+    <div class="border bg-light container">
+        {% for category , message in get_flashed_messages(with_categories = true) %}
             {{ message }}
-            {% endfor %}
-            <div class="header">
-                <h4 class="header-title"> پزشکان</h4>
-            </div>
-            <div class="border bg-light content">
-                <div class="operation">
-                    <ul class="operation-group">
-                        <li class="operation-item">
-                            <div class="option-logo">
-                                <img class="img" src="{{url_for('static',filename='assets/logo/plus.png')}}">
+        {% endfor %}
+        <div class="header">
+            <h4 class="header-title"> پزشکان</h4>
+        </div>
+        <div class="border bg-light content">
+            <div class="operation">
+                <ul class="operation-group">
+                    <li class="operation-item">
+                        <div class="option-logo">
+                            <img class="img" src="{{ url_for('static',filename='assets/logo/plus.png') }}">
+                        </div>
+                        <a href="#" class="operation-item__link" data-toggle="modal"
+                           data-target="#modal-add-item">افزودن</a>
+                        <form action="{{ url_for('add_doctor') }}" method="POST">
+                            <div class="modal fade" id="modal-add-item" tabindex="-1" role="dialog"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog col-6" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">افزودن پزشک</h5>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <div class="form-group col-md-6 col-12">
+                                                <label>نام:</label>
+                                                <input type="text" class="form-control" name="name" required>
+                                            </div>
+
+                                            <div class="form-group col-md-6 col-12">
+                                                <label>نام خانوادگی:</label>
+                                                <input type="text" class="form-control" name="last_name" required>
+                                            </div>
+
+                                            <div class="form-group col-md-6 col-12">
+                                                <label>شماره تماس:</label>
+                                                <input type="text" class="form-control" name="phone" required>
+                                            </div>
+
+                                            <div class="form-group col-md-6 col-12">
+                                                <label>کدملی :</label>
+                                                <input type="text" class="form-control" name="NC" required>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>تخصص :</label>
+                                                <select class="form-control" name="speciality" required>
+                                                    <option value="0" selected disabled hidden>تخصص را انتخاب کنید ...
+                                                    </option>
+                                                    {% for sp in values['specialties'] %}
+                                                        <option value="{{ sp.id }}">{{ sp.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>مرکز درمانی :</label>
+                                                <select class="form-control" name="medical" required>
+                                                    <option value="0" selected disabled hidden>مرکز درمانی را انتخاب
+                                                        کنید ...
+                                                    </option>
+                                                    {% for medical in values['medicals'] %}
+                                                        <option value="{{ medical.id }}">{{ medical.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">بستن صفحه
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">ذخیره اطلاعات</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <a href="#" class="operation-item__link" data-toggle="modal"
-                                data-target="#modal-add-item">افزودن</a>
-                            <form action="{{ url_for('add_doctor') }}" method="POST">
-                                <div class="modal fade" id="modal-add-item" tabindex="-1" role="dialog"
-                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        </form>
+
+                    </li>
+                </ul>
+            </div>
+            <div class="search">
+                <input class="form-control col-md-4 col-12" type="text" placeholder="نام پزشک را وارد کنید">
+            </div>
+            <div class="result-container">
+
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">کد ملی</th>
+                        <th scope="col">نام</th>
+                        <th scope="col">نام خانوادگی</th>
+                        <th scope="col">تخصص</th>
+                        <th scope="col">شماره تماس</th>
+                        <th scope="col">مرکز درمانی</th>
+                        <th scope="col">عملیات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for doctor in values['data'] %}
+                        <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{ doctor['NC'] }}</td>
+                            <td>{{ doctor['name'] }}</td>
+                            <td>{{ doctor['last_name'] }}</td>
+                            <td>{{ doctor['speciality'] }}</td>
+                            <td>{{ doctor['phone'] }}</td>
+                            <td>{{ doctor['medical'] }}</td>
+                            <td>
+                                <a style="text-decoration: none;" href="#" data-toggle="modal"
+                                   data-target="#modal-delete-item">حذف</a>
+
+                                <span>|</span>
+
+                                <a style="text-decoration: none;" href="#" data-toggle="modal"
+                                   data-target="#modal-edit-item">ویرایش</a>
+
+                            </td>
+                            <form action="{{ url_for('delete_doctor', doctor_id = doctor["id"]) }}" method="POST">
+                                <div class="modal fade" id="modal-delete-item" tabindex="-1" role="dialog"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">حذف پزشک</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                ایا از حذف این آیتم اطمینان دارید؟
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    لغو
+                                                </button>
+                                                <button type="submit" class="btn btn-danger">حذف</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
+                            <form action="{{ url_for('edit_doctor', doctor_id = doctor["id"]) }}" method="POST">
+                                <div class="modal fade" id="modal-edit-item" tabindex="-1" role="dialog"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog col-6" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">افزودن پزشک</h5>
+                                                <h5 class="modal-title" id="exampleModalLabel">ویرایش پزشک</h5>
                                             </div>
                                             <div class="modal-body">
-
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>نام:</label>
-                                                    <input type="text" class="form-control" name="name" required>
+                                                    <input type="text" class="form-control" name="new_name"
+                                                           value="{{ doctor.name }}" required>
                                                 </div>
 
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>نام خانوادگی:</label>
-                                                    <input type="text" class="form-control" name="last_name" required>
+                                                    <input type="text" class="form-control" name="new_last_name"
+                                                           value="{{ doctor.last_name }}" required>
                                                 </div>
 
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>شماره تماس:</label>
-                                                    <input type="text" class="form-control" name="phone" required>
+                                                    <input type="text" class="form-control" name="new_phone"
+                                                           value="{{ doctor.phone }}" required>
                                                 </div>
 
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>کدملی :</label>
-                                                    <input type="text" class="form-control" name="NC" required>
+                                                    <input type="text" class="form-control" name="new_NC"
+                                                           value="{{ doctor.NC }}" required>
                                                 </div>
 
-                                                <div class="form-group">
+                                                <div class="form-group col-12">
                                                     <label>تخصص :</label>
-                                                    <select class="form-control" name="speciality" required>
-                                                        <option value="0" selected disabled hidden>تخصص را انتخاب کنید ...</option>
+                                                    <select class="form-control" name="new_specialty" required>
                                                         {% for sp in values['specialties'] %}
-                                                        <option value="{{ sp.id }}">{{ sp.name }}</option>
+                                                            {% if sp.id == doctor.specialty %}
+                                                                <option value="{{ sp.id }} "
+                                                                        selected>{{ sp.name }}</option>
+                                                            {% else %}
+                                                                <option value="{{ sp.id }} ">{{ sp.name }}</option>
+                                                            {% endif %}
                                                         {% endfor %}
                                                     </select>
                                                 </div>
-                                                <div class="form-group">
+                                                <div class="form-group col-12">
                                                     <label>مرکز درمانی :</label>
-                                                    <select class="form-control" name="medical" required>
-                                                        <option value="0" selected disabled hidden>مرکز درمانی را انتخاب کنید ...</option>
+                                                    <select class="form-control" name="new_medical" required>
                                                         {% for medical in values['medicals'] %}
-                                                        <option value="{{ medical.id }}">{{ medical.name }}</option>
+                                                            {% if medical.id == doctor.medical %}
+                                                                <option value="{{ medical.id }} "
+                                                                        selected>{{ medical.name }}</option>
+                                                            {% else %}
+                                                                <option value="{{ medical.id }} ">{{ medical.name }}</option>
+                                                            {% endif %}
                                                         {% endfor %}
                                                     </select>
                                                 </div>
-
-
+                                            </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">بستن صفحه</button>
+                                                        data-dismiss="modal">بستن صفحه
+                                                </button>
                                                 <button type="submit" class="btn btn-primary">ذخیره اطلاعات</button>
                                             </div>
                                         </div>
@@ -77,140 +216,17 @@
                                 </div>
                             </form>
 
-                        </li>
-                    </ul>
-                </div>
-                <div class="search">
-                    <input class="form-control col-md-4 col-12" type="text" placeholder="نام پزشک را وارد کنید">
-                </div>
-                <div class="result-container">
 
-                    <table class="table table-striped">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">کد ملی</th>
-                                <th scope="col">نام</th>
-                                <th scope="col">نام خانوادگی</th>
-                                <th scope="col">تخصص</th>
-                                <th scope="col">شماره تماس</th>
-                                <th scope="col">مرکز درمانی</th>
-                                <th scope="col">عملیات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                {% for doctor in values['data'] %}
-                                <th scope="row">1</th>
-                                <td>{{ doctor['NC'] }}</td>
-                                <td>{{ doctor['name'] }}</td>
-                                <td>{{ doctor['last_name'] }}</td>
-                                <td>{{ doctor['speciality'] }}</td>
-                                <td>{{ doctor['phone'] }}</td>
-                                <td>{{ doctor['medical'] }}</td>
-                                <td>
-                                    <a style="text-decoration: none;" href="#" data-toggle="modal"
-                                    data-target="#modal-delete-item">حذف</a>
+                            </td>
 
-                                    <span>|</span>
-
-                                    <a style="text-decoration: none;" href="#" data-toggle="modal"
-                                    data-target="#modal-edit-item">ویرایش</a>
-
-                                </td>
-                                    <form>
-                                    <div class="modal fade" id="modal-delete-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">حذف  پزشک</h5>
-                                            </div>
-                                            <div class="modal-body">
-                                              ایا از حذف این آیتم اطمینان دارید؟
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">لغو</button>
-                                              <button type="submit" class="btn btn-danger">حذف</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </form>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
 
 
-                                    <form>
-                                        <div class="modal fade" id="modal-edit-item" tabindex="-1" role="dialog"
-                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog col-6" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">ویرایش  پزشک</h5>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form-group col-md-6 col-12">
-                                                            <label>نام:</label>
-                                                            <input type="text" class="form-control" required>
-                                                        </div>
-        
-                                                        <div class="form-group col-md-6 col-12">
-                                                            <label>نام خانوادگی:</label>
-                                                            <input type="text" class="form-control" required>
-                                                        </div>
-        
-                                                        <div class="form-group col-md-6 col-12">
-                                                            <label>شماره تماس:</label>
-                                                            <input type="text" class="form-control" required>
-                                                        </div>
-                                                        
-                                                        <div class="form-group col-md-6 col-12">
-                                                            <label>کدملی :</label>
-                                                            <input type="text" class="form-control" required>
-                                                        </div>
-        
-                                                        <div class="form-group col-12">
-                                                            <label>تخصص :</label>
-                                                            <select class="form-control" required>
-                                                                <option value="0" selected disabled hidden>تخصص را انتخاب کنید ...</option>
-                                                                <option value="1">1تخصص</option>
-                                                                <option value="2">2تخصص</option>
-                                                                <option value="3">3تخصص</option>
-                                                                <option value="4">4تخصص</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group col-12">
-                                                            <label>مرکز درمانی :</label>
-                                                            <select class="form-control" required>
-                                                                <option value="0" selected disabled hidden>مرکز درمانی را انتخاب کنید ...</option>
-                                                                <option value="1">1مرکز</option>
-                                                                <option value="2">2مرکز</option>
-                                                                <option value="3">3مرکز</option>
-                                                                <option value="4">4مرکز</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">بستن صفحه</button>
-                                                        <button type="submit" class="btn btn-primary">ذخیره اطلاعات</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-
-
-
-                                </td>
-
-                                
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-
-
-                </div>
             </div>
-            <div class="footer"></div>
         </div>
+        <div class="footer"></div>
+    </div>
 {% endblock %}

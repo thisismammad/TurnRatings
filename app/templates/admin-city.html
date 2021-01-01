@@ -27,12 +27,11 @@
                                                 <h5 class="modal-title" id="exampleModalLabel">افزودن شهر</h5>
                                             </div>
                                             <div class="modal-body">
-
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>نام:</label>
                                                     <input type="text" class="form-control" name="name" required>
                                                 </div>
-
+                                            </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
                                                     data-dismiss="modal">بستن صفحه</button>
@@ -62,7 +61,7 @@
                         <tbody>
                         {% for city in values['data'] %}
                             <tr>
-                                <th scope="row">{{ city.id }}</th>
+                                <th scope="row">{{ loop.index }}</th>
                                 <td>{{ city.name }}</td>
                                 <td>
                                     <a style="text-decoration: none;" href="#" data-toggle="modal"
@@ -74,7 +73,7 @@
                                     data-target="#modal-edit-item">ویرایش</a>
 
 
-                                    <form>
+                                    <form action="{{ url_for('delete_city', city_id = city.id) }}" method="POST">
                                     <div class="modal fade" id="modal-delete-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                           <div class="modal-content">
@@ -94,7 +93,7 @@
                                     </form>
 
 
-                                    <form>
+                                    <form action="{{ url_for('edit_city', city_id= city.id) }}" method="POST">
                                         <div class="modal fade" id="modal-edit-item" tabindex="-1" role="dialog"
                                             aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div class="modal-dialog col-6" role="document">
@@ -105,7 +104,7 @@
                                                     <div class="modal-body">
                                                         <div class="form-group col-md-6 col-12">
                                                             <label>نام:</label>
-                                                            <input type="text" value="رودان" class="form-control" required>
+                                                            <input type="text" value="{{ city.name }}" class="form-control" name="new_name" required>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
