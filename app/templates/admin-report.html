@@ -11,7 +11,7 @@
                     </button>
                 </div>
             {% elif category == "danger" %}
-                <div id="alert"  class="alert alert-danger alert-dismissible fade show" role="alert">
+                <div id="alert" class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ message }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -24,54 +24,81 @@
         </div>
         <div class="border bg-light content">
 
-            <form>
+            <form action="{{ url_for('reporting') }}" method="POST">
                 <div class="search">
-
                     <div class="form-group col-md-3 col-12">
-                        <select class="form-control" required>
-                            <option value="0" selected disabled hidden>شهر را انتخاب کنید ...</option>
-                            <option value="1">شهر1</option>
-                            <option value="2">شهر2</option>
-                            <option value="3">شهر3</option>
-                            <option value="4">شهر4</option>
+                        <select class="form-control" id="select_city_report" name="city" required>
+                            <option value="0" selected>شهر را انتخاب کنید ...</option>
+                            {% for city in values["cities"] %}
+                                {% if values["city_id"] and values["city_id"] == city.id %}
+                                    <option value="{{ city.id }}" selected>{{ city.name }}</option>
+                                {% else %}
+                                    <option value="{{ city.id }}">{{ city.name }}</option>
+                                {% endif %}
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group col-md-3 col-12">
-                        <select class="form-control" required>
-                            <option value="0" selected disabled hidden>مرکز درمانی را انتخاب کنید ...</option>
-                            <option value="1">1مرکز</option>
-                            <option value="2">2مرکز</option>
-                            <option value="3">3مرکز</option>
-                            <option value="4">4مرکز</option>
+                        <select class="form-control" id="select_medical_report" name="medical" required>
+                            <option value="0" selected>مرکز درمانی را انتخاب کنید ...</option>
+                            {% for medical in values["medicals"] %}
+                                {% if values["medical_id"] and values["medical_id"] == medical.id %}
+                                    <option value="{{ medical.id }}" selected>{{ medical.name }}</option>
+                                {% else %}
+                                    <option value="{{ medical.id }}">{{ medical.name }}</option>
+                                {% endif %}
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group col-md-3 col-12">
-                        <select class="form-control" required>
-                            <option value="0" selected disabled hidden>تخصص را انتخاب کنید ...</option>
-                            <option value="1">1تخصص</option>
-                            <option value="2">2تخصص</option>
-                            <option value="3">3تخصص</option>
-                            <option value="4">4تخصص</option>
+                        <select class="form-control" id="select_specialties_report" name="speciality" required>
+                            <option value="0" selected>تخصص را انتخاب کنید ...</option>
+                            {% for sp in values["specialties"] %}
+                                {% if values["speciality_id"]  and values["speciality_id"] == sp.id %}
+                                    <option value="{{ sp.id }}" selected>{{ sp.name }}</option>
+                                {% else %}
+                                    <option value="{{ sp.id }}">{{ sp.name }}</option>
+                                {% endif %}
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group col-md-3 col-12">
-                        <select class="form-control" required>
-                            <option value="0" selected disabled hidden>پزشک را انتخاب کنید ...</option>
-                            <option value="1">1پزشک</option>
-                            <option value="2">2پزشک</option>
-                            <option value="3">3پزشک</option>
-                            <option value="4">4پزشک</option>
+                        <select class="form-control" id="select_doctor_report" name="doctor" required>
+                            <option value="0" selected>پزشک را انتخاب کنید ...</option>
+                            {% for doctor in values["doctors"] %}
+                                {% if values["doctor_id"] and values["doctor_id"] == doctor.id %}
+                                    <option value="{{ doctor.id }}"
+                                            selected>{{ doctor.name+'-'+doctor.last_name }}</option>
+                                {% else %}
+                                    <option value="{{ doctor.id }}"
+                                    >{{ doctor.name+'-'+doctor.last_name }}</option>
+                                {% endif %}
+                            {% endfor %}
                         </select>
                     </div>
-                    <div class="form-group col-md-4 col-12">
-                        <label>تاریخ شروع:</label>
-                        <input type="date" class="form-control" required>
-                    </div>
-                    <div class="form-group col-md-4 col-12">
-                        <label>تاریخ پایان:</label>
-                        <input type="date" class="form-control" required>
-                    </div>
-
+                    {% if not values["send_start_date"] %}
+                        <div class="form-group col-md-4 col-12">
+                            <label>تاریخ شروع:</label>
+                            <input type="date" name="start_date" class="form-control" placeholder="yyyy-mm-dd" required>
+                        </div>
+                        <div class="form-group col-md-4 col-12">
+                            <label>تاریخ پایان:</label>
+                            <input type="date" name="end_date" class="form-control" placeholder="yyyy-mm-dd" required>
+                        </div>
+                    {% else %}
+                        <div class="form-group col-md-4 col-12">
+                            <label>تاریخ شروع:</label>
+                            <input type="date" name="start_date" placeholder="yyyy-mm-dd"
+                                   value="{{ values['send_start_date'] }}"
+                                   class="form-control" required>
+                        </div>
+                        <div class="form-group col-md-4 col-12">
+                            <label>تاریخ پایان:</label>
+                            <input type="date" name="end_date" placeholder="yyyy-mm-dd"
+                                   value="{{ values['send_end_date'] }}"
+                                   class="form-control" required>
+                        </div>
+                    {% endif %}
                     <div class="form-group col-md-4 col-12 d-flex align-items-end">
                         <input type="submit" class="btn btn-success from-buttom " value="جستجو">
                     </div>
@@ -84,40 +111,27 @@
                     <thead class="thead-dark">
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">نام</th>
-                        <th scope="col">نام خانوادگی</th>
+                        <th scope="col">کد ملی</th>
+                        <th scope="col">نام و نام خانوادگی</th>
                         <th scope="col">پزشک</th>
                         <th scope="col">مرکز درمانی</th>
                         <th scope="col">تاریخ</th>
+                        <th scope="col">وضعیت</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>امیرمسعود</td>
-                        <td>ظهوری</td>
-                        <td>محمد داوری</td>
-                        <td>کلینک 22 بهمن</td>
-                        <td>2020-10-10</td>
+                    {% for turn in values["data"] %}
+                        <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{ turn["sick_NC"] }}</td>
+                            <td>{{ turn["sick_name"] }}</td>
+                            <td>{{ turn["doctor"] }}</td>
+                            <td>{{ turn["medical"] }}</td>
+                            <td>{{ turn["date"] }}</td>
+                            <td>{{ turn["status"] }}</td>
 
-
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>امیرمسعود</td>
-                        <td>ظهوری</td>
-                        <td>محمد داوری</td>
-                        <td>کلینک 22 بهمن</td>
-                        <td>2020-10-10</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>امیرمسعود</td>
-                        <td>ظهوری</td>
-                        <td>محمد داوری</td>
-                        <td>کلینک 22 بهمن</td>
-                        <td>2020-10-10</td>
-                    </tr>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
 

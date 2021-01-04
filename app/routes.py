@@ -2,6 +2,7 @@ from flask import render_template, request, flash, redirect, url_for
 from app import app
 from app.models import *
 import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 curent_sick_NC = 0
 searched = False
@@ -157,6 +158,23 @@ def admin_login(input):
                 turn.status = 3
                 db.session.commit()
 
+    elif input == 'report':
+        data.clear()
+        specialties = []
+        for speciality in Specialty.query.all():
+            specialties.append(speciality)
+
+        medicals = []
+        for medical in Medical.query.all():
+            medicals.append(medical)
+
+        doctors = []
+        for doctor in Doctor.query.all():
+            doctors.append(doctor)
+
+        cities = []
+        for city in City.query.all():
+            cities.append(city)
     searched = False
     is_search = searched
     return render_template('admin-' + input + '.html', values=locals())
@@ -328,7 +346,8 @@ def add_user():
                                                         position=int(request.form['position']),
                                                         medical=request.form['medical'])
                                     user = User(id=employee.id,
-                                                password=employee.NC)
+                                                password=generate_password_hash(str(employee.NC)),
+                                                access_level=employee.position)
                                     db.session.add(employee)
                                     db.session.add(user)
                                     db.session.commit()
@@ -377,17 +396,23 @@ def add_turn():
             try:
                 phone = int(request.form['phone'])
                 if len(str(phone)) == 10:
-                    sick = Sick.query.filter_by(NC=curent_sick_NC).first()
-                    turn = Turn(sick=sick.id,
-                                doctor=int(request.form['doctor']),
-                                medical=int(request.form['medical']))
+                    doctor = Doctor.query.filter_by(id=int(request.form['doctor'])).first()
+                    if doctor.daily_capacity > 0:
+                        sick = Sick.query.filter_by(NC=curent_sick_NC).first()
+                        turn = Turn(sick=sick.id,
+                                    doctor=doctor.id,
+                                    medical=int(request.form['medical']))
 
-                    sick.phone = phone
-                    db.session.add(turn)
-                    db.session.commit()
-                    flash('نوبت با موفقت ثبت شد', category='success')
-                    flash('میتوانید از صفحه پیگیری نویت ، نوبت های خود را پیگیری کنید', category='success')
-                    return redirect(url_for('panel'))
+                        sick.phone = phone
+                        db.session.add(turn)
+                        doctor.daily_capacity = doctor.daily_capacity - 1
+                        db.session.commit()
+                        flash('نوبت با موفقت ثبت شد', category='success')
+                        flash('میتوانید از صفحه پیگیری نویت ، نوبت های خود را پیگیری کنید', category='success')
+                        return redirect(url_for('panel'))
+                    else:
+                        flash('تعداد نوبت روزانه پزشک موردنظر به پایان رسیده است', category='danger')
+                        return redirect(url_for('user_turn'))
                 else:
                     flash('شماره تلفن وارد شده صحیح نیست. شماره را بدون +98 وارد کرده و شماره تلفن ثابت را نیز با 076 '
                           'وارد کنید', category='danger')
@@ -417,10 +442,11 @@ def load_specialties():
     specialties = []
     if Doctor.query.filter_by(medical=medical_id):
         for doctor in Doctor.query.filter_by(medical=medical_id):
-            specialty = Specialty.query.filter_by(id=doctor.specialty).first()
-            if specialty.name not in specialties:
-                specialties.append({"sp_name": specialty.name,
-                                    "sp_id": specialty.id})
+            if doctor.daily_capacity > 0:
+                specialty = Specialty.query.filter_by(id=doctor.specialty).first()
+                if specialty.name not in specialties:
+                    specialties.append({"sp_name": specialty.name,
+                                        "sp_id": specialty.id})
     return {"specialties": specialties}
 
 
@@ -431,7 +457,7 @@ def load_doctors():
     doctors = []
     if Doctor.query.filter_by(medical=medical_id):
         for doctor in Doctor.query.filter_by(medical=medical_id):
-            if doctor.specialty == sp_id:
+            if doctor.specialty == sp_id and doctor.daily_capacity > 0:
                 doctors.append({"doctor_name": doctor.name + "-" + doctor.last_name,
                                 "doctor_id": doctor.id})
     return {"doctors": doctors}
@@ -468,6 +494,7 @@ def edit_medical(medical_id):
                                                  address=request.form['new_address'].strip(),
                                                  phone=new_phone,
                                                  city=request.form['new_city'])
+                    print(request.form['new_name'])
                     print(new_medical)
                     print(comparison_medical)
                     print(new_medical == comparison_medical)
@@ -590,6 +617,9 @@ def edit_doctor(doctor_id):
                                                        phone=phone,
                                                        specialty=request.form['new_medical'],
                                                        medical=request.form['new_specialty'])
+                            print(new_doctor)
+                            print(comparison_doctor)
+                            print(new_doctor == comparison_doctor)
                             if not new_doctor == comparison_doctor:
                                 new_doctor.name = request.form["new_name"]
                                 new_doctor.last_name = request.form["new_last_name"]
@@ -695,10 +725,10 @@ def change_password():
         if request.form["old_password"] \
                 and request.form["new_password"] \
                 and request.form["confirm_password"]:
-            if user.password == request.form["old_password"]:
+            if check_password_hash(user.password, request.form["old_password"]):
                 if request.form["new_password"] == request.form["confirm_password"]:
                     if len(request.form["new_password"]) > 8:
-                        user.password = request.form["new_password"]
+                        user.password = generate_password_hash(request.form["new_password"])
                         db.session.commit()
                         flash('رمز عبور با موفقیت تغییر کرد', category='success')
                         return redirect(url_for("admin_login", input="changepassword"))
@@ -719,7 +749,7 @@ def reset_password(user_id):
     if request.method == "POST":
         employee = Employee.query.filter_by(id=int(user_id)).first()
         user = User.query.filter_by(id=employee.id)
-        user.password = employee.NC
+        user.password = generate_password_hash(str(employee.NC))
         db.session.commit()
         return redirect(url_for("admin_login", input="user"))
     return redirect(url_for("admin_login", input="user"))
@@ -819,3 +849,235 @@ def edit_sick(sick_id):
                 flash('کد ملی باید دقیقا 10 رقم عددی باشد', category='danger')
                 return redirect(url_for("admin_login", input="reception"))
     return redirect(url_for("admin_login", input="reception"))
+
+
+@app.route('/reporting', methods=['POST'])
+def reporting():
+    if request.method == "POST":
+        if not request.form["start_date"] or not request.form["end_date"]:
+            flash('انتخاب تاریخ شروع و پایان الزامی است', category='danger')
+            return redirect(url_for('admin_login', input='report'))
+        else:
+            data = []
+            s_date = str(request.form["start_date"]).split('-')
+            e_date = str(request.form["end_date"]).split('-')
+            send_start_date = s_date[0] + '-' + s_date[1] + '-' + s_date[2]
+            send_end_date = e_date[0] + '-' + e_date[1] + '-' + e_date[2]
+            start_date = datetime.datetime(int(s_date[0]), int(s_date[1]), int(s_date[2]))
+            end_date = datetime.datetime(int(e_date[0]), int(e_date[1]), int(e_date[2]))
+
+            if start_date > end_date:
+                flash('تاریخ شروع باید کوچکتر از تاریخ پایان باشد', category='danger')
+                return redirect(url_for('admin_login', input='report'))
+            turn = Turn.query.first()
+            for turn in Turn.query.filter(Turn.date >= start_date, Turn.date <= end_date):
+                sick = Sick.query.filter_by(id=turn.sick).first()
+                if not sick.name:
+                    sick.name = '-'
+                    sick.last_name = ''
+                doctor = Doctor.query.filter_by(id=turn.doctor).first()
+                sp = Specialty.query.filter_by(id=doctor.specialty).first()
+                medical = Medical.query.filter_by(id=turn.medical).first()
+                city = City.query.filter_by(id=medical.city).first()
+                status = ''
+                if turn.status == 0:
+                    status = 'لغو شده'
+                elif turn.status == 1:
+                    status = 'انتظار'
+                elif turn.status == 2:
+                    status = 'انجام شده'
+                elif turn.status == 3:
+                    status = 'منقضی شده'
+
+                data.append({"sick_NC": sick.NC,
+                             "sick_name": sick.name + ' ' + sick.last_name,
+                             "doctor": doctor.name + ' ' + doctor.last_name + '-' + sp.name,
+                             "medical": medical.name + '-' + city.name,
+                             "date": turn.date.date(),
+                             "status": status})
+
+            city_id = int(request.form["city"])
+            medical_id = int(request.form["medical"])
+            speciality_id = int(request.form["speciality"])
+            doctor_id = int(request.form["doctor"])
+            filter_by = {}
+            filter_by = {"city": city_id, "medical": medical_id, "sp": speciality_id, "doctor": doctor_id}
+            for i in filter_by.copy():
+                if not filter_by[i]:
+                    del filter_by[i]
+
+            print(filter_by)
+            for item in data.copy():
+                for k, v in filter_by.items():
+                    if k == "city":
+                        t_city = City.query.filter_by(id=v).first()
+                        md = Medical.query.filter_by(city=v).first()
+                        if md:
+                            for t_medical in Medical.query.filter_by(city=v):
+                                if item in data:
+                                    if not item["medical"] == t_medical.name + '-' + t_city.name:
+                                        data.remove(item)
+                        else:
+                            data.clear()
+                            return render_template('admin-report.html', values=locals())
+                    if k == "medical":
+                        t_t_medical = Medical.query.filter_by(id=v).first()
+                        t_t_city = City.query.filter_by(id=t_t_medical.city).first()
+
+                        if not item["medical"] == t_t_medical.name + '-' + t_t_city.name:
+                            data.remove(item)
+
+                    if k == "sp":
+                        dc = Doctor.query.filter_by(specialty=v).first()
+                        if dc:
+                            for t_doctor in Doctor.query.filter_by(specialty=v):
+                                t_specialty = Specialty.query.filter_by(id=t_doctor.specialty).first()
+                                if item in data:
+                                    if not item[
+                                               "doctor"] == t_doctor.name + ' ' + t_doctor.last_name + '-' + t_specialty.name:
+                                        data.remove(item)
+                        else:
+                            data.clear()
+                            return render_template('admin-report.html', values=locals())
+                    if k == "doctor":
+                        t_t_doctor = Doctor.query.filter_by(id=v).first()
+                        t_t_specialty = Specialty.query.filter_by(id=t_t_doctor.id).first()
+                        if item in data:
+                            if not item[
+                                       "doctor"] == t_t_doctor.name + ' ' + t_t_doctor.last_name + '-' + t_t_specialty.name:
+                                data.remove(item)
+        print(locals())
+        return render_template('admin-report.html', values=locals())
+    return redirect(url_for('admin_login', input='report'))
+
+
+# @app.route('/load-medicals-report', methods=['POST'])
+# def load_medicals_report():
+#     city_id = int(request.form.get('city_id'))
+#     medicals = []
+#     specialties = []
+#     doctors = []
+#
+#     if city_id:
+#         city = City.query.filter_by(id=city_id).first()
+#         if city:
+#             me = Medical.query.filter_by(city=city.id).first()
+#             if me:
+#                 for medical in Medical.query.filter_by(city=city.id):
+#                     medicals.append({"medical_name": medical.name,
+#                                      "medical_id": medical.id})
+#                     for doctor in Doctor.query.filter_by(medical=medical.id):
+#                         doctors.append({"doctor_name": doctor.name + "-" + doctor.last_name,
+#                                         "doctor_id": doctor.id})
+#                         specialty = Specialty.query.filter_by(id=doctor.specialty).first()
+#                         if specialty.name not in specialties:
+#                             specialties.append({"sp_name": specialty.name,
+#                                                 "sp_id": specialty.id})
+#     return {"medicals": medicals, "specialties": specialties, "doctors": doctors}
+#
+#
+# @app.route('/load-specialties-report', methods=['GET', 'POST'])
+# def load_specialties_report():
+#     medical_id = int(request.form.get('medical_id'))
+#     cities = []
+#     medicals = []
+#     specialties = []
+#     doctors = []
+#     if medical_id:
+#         medical = Medical.query.filter_by(id=medical_id).first()
+#         medicals.append({"medical_name": medical.name,
+#                          "medical_id": medical.id})
+#         city = City.query.filter_by(id=medical.city).first()
+#         if city:
+#             cities.append({"city_name": city.name,
+#                            "city_id": city.id})
+#         dcc = Doctor.query.filter_by(medical=medical_id).first()
+#         if dcc:
+#             for doctor in Doctor.query.filter_by(medical=medical_id):
+#                 doctors.append({"doctor_name": doctor.name + "-" + doctor.last_name,
+#                                 "doctor_id": doctor.id})
+#                 specialty = Specialty.query.filter_by(id=doctor.specialty).first()
+#                 if specialty.name not in specialties:
+#                     specialties.append({"sp_name": specialty.name,
+#                                         "sp_id": specialty.id})
+#     return {"cities": cities, "medicals": medicals, "specialties": specialties, "doctors": doctors}
+#
+#
+# @app.route('/load-doctors-report', methods=['GET', 'POST'])
+# def load_doctors_report():
+#     sp_id = int(request.form.get('sp_id'))
+#     medical_id = int(request.form.get('medical_id'))
+#     cities = []
+#     medicals = []
+#     specialties = []
+#     doctors = []
+#     if sp_id and not medical_id:
+#         for doctor in Doctor.query.filter_by(specialty=sp_id):
+#             doctors.append({"doctor_name": doctor.name + "-" + doctor.last_name,
+#                             "doctor_id": doctor.id})
+#             medical = Medical.query.filter_by(id=doctor.medical).first()
+#             medicals.append({"medical_name": medical.name,
+#                              "medical_id": medical.id})
+#             city = City.query.filter_by(id=medical.city).first()
+#             cities.append({"city_name": city.name,
+#                            "city_id": city.id})
+#         for sp in Specialty.query.all():
+#             specialties.append({"sp_name": sp.name,
+#                                 "sp_id": sp.id})
+#         return {"cities": cities, "medicals": medicals, "specialties": specialties, "doctors": doctors}
+#     elif medical_id and not sp_id:
+#         for medical in Medical.query.all():
+#             medicals.append({"medical_name": medical.name,
+#                              "medical_id": medical.id})
+#         for doctor in Doctor.query.filter_by(medical=medical_id):
+#             doctors.append({"doctor_name": doctor.name + "-" + doctor.last_name,
+#                             "doctor_id": doctor.id})
+#             specialty = Specialty.query.filter_by(id=doctor.specialty).first()
+#             if specialty.name not in specialties:
+#                 specialties.append({"sp_name": specialty.name,
+#                                     "sp_id": specialty.id})
+#         medi = Medical.query.filter_by(id=medical_id).first()
+#         city = City.query.filter_by(id=medi.city).first()
+#         cities.append({"city_name": city.name,
+#                        "city_id": city.id})
+#         return {"cities": cities, "medicals": medicals, "specialties": specialties, "doctors": doctors}
+#     elif sp_id and medical_id:
+#         if Doctor.query.filter_by(medical=medical_id):
+#             for doctor in Doctor.query.filter_by(medical=medical_id):
+#                 if doctor.specialty == sp_id:
+#                     doctors.append({"doctor_name": doctor.name + "-" + doctor.last_name,
+#                                     "doctor_id": doctor.id})
+#             medi = Medical.query.filter_by(id=medical_id).first()
+#             city = City.query.filter_by(id=medi.city).first()
+#             cities.append({"city_name": city.name,
+#                            "city_id": city.id})
+#             for sp in Specialty.query.all():
+#                 specialties.append({"sp_name": sp.name,
+#                                     "sp_id": sp.id})
+#     return {"cities": cities, "medicals": medicals, "specialties": specialties, "doctors": doctors}
+
+
+@app.route('/load-data-for-report', methods=['GET', 'POST'])
+def load_data_for_report():
+    cities = []
+    medicals = []
+    specialties = []
+    doctors = []
+    for doctor in Doctor.query.all():
+        doctors.append({"doctor_id": doctor.id,
+                        "doctor_name": doctor.name,
+                        "doctor_last_name": doctor.last_name,
+                        "doctor_medical": doctor.medical,
+                        "doctor_sp": doctor.specialty})
+
+    for medical in Medical.query.all():
+        medicals.append({"medical_id": medical.id,
+                         "medical_name": medical.name,
+                         "medical_city": medical.city})
+    for sp in Specialty.query.all():
+        specialties.append({"sp_name": sp.name,
+                            "sp_id": sp.id})
+    for city in City.query.all():
+        cities.append({"city_name": city.name,
+                       "city_id": city.id})
+    return {"cities": cities, "medicals": medicals, "specialties": specialties, "doctors": doctors}

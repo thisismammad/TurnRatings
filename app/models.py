@@ -11,9 +11,10 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.BigInteger, db.ForeignKey("employee.id"), nullable=False, primary_key=True)
     password = db.Column(db.String(60), nullable=False)
+    access_level = db.Column(db.SmallInteger, db.ForeignKey("employee.status"), nullable=False)
 
     def __repr__(self):
-        return f"User({self.id}','{self.password}' )"
+        return f"User({self.id}','{self.password}','{self.access_level}')"
 
 
 class Employee(db.Model):
@@ -31,10 +32,15 @@ class Employee(db.Model):
             # don't attempt to compare against unrelated types
             return NotImplemented
 
-        return self.name == other.name and self.last_name == other.last_name and self.NC == other.NC and self.phone == other.phone and self.medical == other.medical and self.position == other.position
+        return self.name == other.name and \
+               self.last_name == other.last_name and \
+               self.NC == other.NC and \
+               self.phone == other.phone and \
+               self.medical == other.medical and \
+               self.position == other.position
 
     def __repr__(self):
-        return f"Employee({self.id}','{self.name}','{self.last_name}','{self.NC}','{self.phone}' )"
+        return f"Employee({self.id}','{self.name}','{self.last_name}','{self.NC}','{self.phone}')"
 
 
 class Sick(db.Model):
@@ -49,10 +55,13 @@ class Sick(db.Model):
             # don't attempt to compare against unrelated types
             return NotImplemented
 
-        return self.name == other.name and self.last_name == other.last_name and self.NC == other.NC and self.phone == other.phone
+        return self.name == other.name and \
+               self.last_name == other.last_name and \
+               self.NC == other.NC and \
+               self.phone == other.phone
 
     def __repr__(self):
-        return f"Sick('{self.id}','{self.name}','{self.last_name}','{self.NC}','{self.phone}' )"
+        return f"Sick('{self.id}','{self.name}','{self.last_name}','{self.NC}','{self.phone}')"
 
 
 class Doctor(db.Model):
@@ -71,7 +80,13 @@ class Doctor(db.Model):
             # don't attempt to compare against unrelated types
             return NotImplemented
 
-        return self.name == other.name and self.last_name == other.last_name and self.NC == other.NC and self.phone == other.phone and self.medical == other.medical and self.specialty == other.specialty and self.daily_capacity == other.daily_capacity
+        return self.name == other.name and \
+               self.last_name == other.last_name and \
+               self.NC == other.NC and \
+               self.phone == other.phone and \
+               self.medical == other.medical and \
+               self.specialty == other.specialty and \
+               self.daily_capacity == other.daily_capacity
 
     def __repr__(self):
         return f"Doctor({self.id}','{self.name}','{self.last_name}','{self.NC}','{self.phone}','{self.specialty}','{self.medical}')"
@@ -89,10 +104,13 @@ class Medical(db.Model):
         if not isinstance(other, Medical):
             # don't attempt to compare against unrelated types
             return NotImplemented
-        return self.name.strip() == other.name.strip() and self.address.strip() == other.address.strip() and self.phone == other.phone and self.city == other.city
+        return self.name.strip() == other.name.strip() and \
+               self.address.strip() == other.address.strip() and \
+               self.phone == other.phone and \
+               self.city == other.city
 
     def __repr__(self):
-        return f"Medical('{self.id}','{self.name}','{self.address}','{self.phone}','{self.city}'  )"
+        return f"Medical('{self.id}','{self.name}','{self.address}','{self.phone}','{self.city}')"
 
 
 class Turn(db.Model):
@@ -104,7 +122,7 @@ class Turn(db.Model):
     status = db.Column(db.SmallInteger, nullable=False, default=1)
 
     def __repr__(self):
-        return f"Turn('{self.id}','{self.sick}','{self.doctor}','{self.medical}','{self.date}' ,'{self.status}' )"
+        return f"Turn('{self.id}','{self.sick}','{self.doctor}','{self.medical}','{self.date}' ,'{self.status}')"
 
 
 class City(db.Model):
