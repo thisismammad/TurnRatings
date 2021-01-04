@@ -22,61 +22,57 @@
         <div class="header">
             <h4 class="header-title">نوبت دهی</h4>
         </div>
-        <form>
+        <form action="{{ url_for('add_turn_user') }}" method="POST">
             <div class="border bg-light content">
                 <div class="d-flex flex-column p-2">
                     <div class="form-group col-md-4 col-12">
                         <label>تاریخ :</label>
-                        <input type="date" class="form-control">
+                        <input type="text" value="{{ values['date'] }}" class="form-control" disabled>
                     </div>
+                    <div class="form-nc">
+                        <div class="form-group  col-md-4 col-12">
+                            <label>کد ملی :</label>
+                            <input type="text" class="form-control" name="NC" required>
 
-                    <div class="form-group col-md-4 col-12">
-                        <label>کد ملی :</label>
-                        <input type="text" class="form-control" required>
+                        </div>
+                        <div class="form-group  col-md-4 col-12">
+                            <label>نام :</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
                     </div>
-
-                    <div class="form-group col-md-4 col-12">
-                        <label>موبایل:</label>
-                        <input type="tel" class="form-control" required>
+                    <div class="form-nc">
+                        <div class="form-group col-md-4 col-12">
+                            <label>موبایل:</label>
+                            <input type="tel" class="form-control" name="phone" required>
+                        </div>
+                        <div class="form-group col-md-4 col-12">
+                            <label>نام خانوادگی:</label>
+                            <input type="text" class="form-control" name="last_name" required>
+                        </div>
                     </div>
-
                     <div class="form-group col-md-4 col-12">
-                        <select class="form-control" required>
+                        <select id="select_city" class="form-control" name="city" required>
                             <option value="0" selected disabled hidden>شهر را انتخاب کنید ...</option>
-                            <option value="1">شهر1</option>
-                            <option value="2">شهر2</option>
-                            <option value="3">شهر3</option>
-                            <option value="4">شهر4</option>
+                            {% for city in values['cites'] %}
+                                <option value="{{ city.id }}">{{ city.name }} </option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group col-md-4 col-12">
-                        <select class="form-control" required>
+                        <select id="select_medical" class="form-control" name="medical" required>
                             <option value="0" selected disabled hidden>مرکز درمانی را انتخاب کنید ...</option>
-                            <option value="1">1مرکز</option>
-                            <option value="2">2مرکز</option>
-                            <option value="3">3مرکز</option>
-                            <option value="4">4مرکز</option>
                         </select>
                     </div>
                     <div class="form-group col-md-4 col-12">
-                        <select class="form-control" required>
+                        <select id="select_specialties" class="form-control" name="speciality" required>
                             <option value="0" selected disabled hidden>تخصص را انتخاب کنید ...</option>
-                            <option value="1">1تخصص</option>
-                            <option value="2">2تخصص</option>
-                            <option value="3">3تخصص</option>
-                            <option value="4">4تخصص</option>
                         </select>
                     </div>
                     <div class="form-group col-md-4 col-12">
-                        <select class="form-control" required>
+                        <select id="select_doctor" class="form-control" name="doctor" required>
                             <option value="0" selected disabled hidden>پزشک را انتخاب کنید ...</option>
-                            <option value="1">1پزشک</option>
-                            <option value="2">2پزشک</option>
-                            <option value="3">3پزشک</option>
-                            <option value="4">4پزشک</option>
                         </select>
                     </div>
-
                     <input type="submit" class="btn btn-success from-buttom" value="ثبت نوبت">
                 </div>
             </div>

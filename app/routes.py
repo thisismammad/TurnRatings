@@ -175,6 +175,11 @@ def admin_login(input):
         cities = []
         for city in City.query.all():
             cities.append(city)
+    elif input == 'turn':
+        date = datetime.date.today()
+        cites = []
+        for city in City.query.all():
+            cites.append(city)
     searched = False
     is_search = searched
     return render_template('admin-' + input + '.html', values=locals())
@@ -383,7 +388,6 @@ def add_user():
 
 @app.route('/add-turn', methods=['POST'])
 def add_turn():
-    print(request.form['city'])
     if request.method == 'POST':
         if not request.form['phone'] \
                 or not request.form['city'] or request.form['city'] == '0' \
@@ -744,13 +748,14 @@ def change_password():
     return redirect(url_for("admin_login", input="changepassword"))
 
 
-@app.route('/reset-password/<user_id>', methods=['POST'])
+@app.route('/reset-password/<user_id>', methods=['GET'])
 def reset_password(user_id):
-    if request.method == "POST":
+    if request.method == "GET":
         employee = Employee.query.filter_by(id=int(user_id)).first()
         user = User.query.filter_by(id=employee.id)
         user.password = generate_password_hash(str(employee.NC))
         db.session.commit()
+        flash('رمز عبور به کدملی کارمند تغییر یافت', category="success")
         return redirect(url_for("admin_login", input="user"))
     return redirect(url_for("admin_login", input="user"))
 
@@ -858,6 +863,22 @@ def reporting():
             flash('انتخاب تاریخ شروع و پایان الزامی است', category='danger')
             return redirect(url_for('admin_login', input='report'))
         else:
+            specialties = []
+            for speciality in Specialty.query.all():
+                specialties.append(speciality)
+
+            medicals = []
+            for medical in Medical.query.all():
+                medicals.append(medical)
+
+            doctors = []
+            for doctor in Doctor.query.all():
+                doctors.append(doctor)
+
+            cities = []
+            for city in City.query.all():
+                cities.append(city)
+
             data = []
             s_date = str(request.form["start_date"]).split('-')
             e_date = str(request.form["end_date"]).split('-')
@@ -923,30 +944,31 @@ def reporting():
                     if k == "medical":
                         t_t_medical = Medical.query.filter_by(id=v).first()
                         t_t_city = City.query.filter_by(id=t_t_medical.city).first()
+                        if item in data:
+                            if not item["medical"] == t_t_medical.name + '-' + t_t_city.name:
+                                print("delete item by medical")
+                                data.remove(item)
 
-                        if not item["medical"] == t_t_medical.name + '-' + t_t_city.name:
-                            data.remove(item)
-
-                    if k == "sp":
-                        dc = Doctor.query.filter_by(specialty=v).first()
-                        if dc:
-                            for t_doctor in Doctor.query.filter_by(specialty=v):
-                                t_specialty = Specialty.query.filter_by(id=t_doctor.specialty).first()
-                                if item in data:
-                                    if not item[
-                                               "doctor"] == t_doctor.name + ' ' + t_doctor.last_name + '-' + t_specialty.name:
-                                        data.remove(item)
-                        else:
-                            data.clear()
-                            return render_template('admin-report.html', values=locals())
                     if k == "doctor":
                         t_t_doctor = Doctor.query.filter_by(id=v).first()
                         t_t_specialty = Specialty.query.filter_by(id=t_t_doctor.id).first()
                         if item in data:
                             if not item[
                                        "doctor"] == t_t_doctor.name + ' ' + t_t_doctor.last_name + '-' + t_t_specialty.name:
+                                print("delete item by doctor")
                                 data.remove(item)
-        print(locals())
+            if "sp" in filter_by.keys():
+                dc = Doctor.query.filter_by(specialty=filter_by["sp"]).first()
+                if dc:
+                    specialty = Specialty.query.filter_by(id=filter_by["sp"]).first()
+                    for item in data.copy():
+                        s_item = item["doctor"].split("-")[1]
+                        if s_item != specialty.name:
+                            data.remove(item)
+                else:
+                    data.clear()
+                    return render_template('admin-report.html', values=locals())
+        print(locals()["data"])
         return render_template('admin-report.html', values=locals())
     return redirect(url_for('admin_login', input='report'))
 
@@ -975,3 +997,82 @@ def load_data_for_report():
         cities.append({"city_name": city.name,
                        "city_id": city.id})
     return {"cities": cities, "medicals": medicals, "specialties": specialties, "doctors": doctors}
+
+
+@app.route('/add-turn-user', methods=['POST'])
+def add_turn_user():
+    if request.method == 'POST':
+        if not request.form['NC'] \
+                or not request.form['name'] \
+                or not request.form['last_name'] \
+                or not request.form['phone'] \
+                or not request.form['city'] or request.form['city'] == '0' \
+                or not request.form['medical'] or request.form['medical'] == '0' \
+                or not request.form['speciality'] or request.form['speciality'] == '0' \
+                or not request.form['doctor'] or request.form['doctor'] == '0':
+            flash('پر کردن تمام فیلد ها ضروری است', category='danger')
+            redirect(url_for('user_turn_user'))
+        else:
+            try:
+                NC = int(request.form['NC'])
+                try:
+                    print(len(request.form["phone"]))
+                    phone = int(request.form['phone'])
+                    print(phone)
+                    print(len(str(phone)))
+                    print(request.form['medical'])
+                    if len(str(NC)) == 10:
+                        if len(str(phone)) == 10:
+                            print("in phone if")
+                            doctor = Doctor.query.filter_by(id=int(request.form['doctor'])).first()
+                            if doctor.daily_capacity > 0:
+                                sick = Sick.query.filter_by(NC=NC).first()
+                                if sick:
+                                    turn = Turn(sick=sick.id,
+                                                doctor=doctor.id,
+                                                medical=int(request.form['medical']))
+
+                                    sick.phone = phone
+                                    db.session.add(turn)
+                                    doctor.daily_capacity = doctor.daily_capacity - 1
+                                    db.session.commit()
+                                    flash('نوبت با موفقت ثبت شد', category='success')
+                                else:
+                                    print("else sick exist")
+                                    el_sick = Sick(NC=NC,
+                                                   name=request.form['name'],
+                                                   last_name=request.form['last_name'],
+                                                   phone=phone)
+                                    print(el_sick)
+                                    db.session.add(el_sick)
+                                    db.session.commit()
+                                    get_sick= Sick.query.filter_by(NC=NC).first()
+                                    print(get_sick)
+                                    turn = Turn(sick=get_sick.id,
+                                                doctor=doctor.id,
+                                                medical=int(request.form['medical']))
+                                    db.session.add(turn)
+                                    doctor.daily_capacity = doctor.daily_capacity - 1
+                                    db.session.commit()
+                                    flash('نوبت با موفقت ثبت شد', category='success')
+                                return redirect(url_for('admin_login', input='turn'))
+                            else:
+                                flash('تعداد نوبت روزانه پزشک موردنظر به پایان رسیده است', category='danger')
+                                return redirect(url_for('admin_login', input='turn'))
+                        else:
+                            flash(
+                                'شماره تلفن وارد شده صحیح نیست. شماره را بدون +98 وارد کرده و شماره تلفن ثابت را نیز با 076 '
+                                'وارد کنید', category='danger')
+                            return redirect(url_for('admin_login', input='turn'))
+                    else:
+                        flash('کدملی وارد شده صحیح نیست. کدملی باید دقیقا 10 رقم عددی باشد', category='danger')
+                        return redirect(url_for('admin_login', input='turn'))
+                except:
+                    flash('شماره تلفن وارد شده صحیح نیست. شماره را بدون +98 وارد کرده و شماره تلفن ثابت را نیز با 076 '
+                          'وارد کنید', category='danger')
+                    return redirect(url_for('admin_login', input='turn'))
+            except:
+                flash('کدملی وارد شده صحیح نیست. کدملی باید دقیقا 10 رقم عددی باشد', category='danger')
+                return redirect(url_for('admin_login', input='turn'))
+
+    return redirect(url_for('admin_login', input='turn'))
