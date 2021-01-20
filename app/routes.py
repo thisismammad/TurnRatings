@@ -247,7 +247,7 @@ def admin_login(input):
         elif input == 'changepassword':
             return render_template('admin-' + input + '.html', values=locals())
         else:
-            return render_template('admin-' + input + '.html', values=locals())
+            return render_template('admin-panel.html', values=locals())
 
     elif current_user.access_level == 2:
         em = Employee.query.filter_by(id=current_user.id).first()
@@ -303,7 +303,7 @@ def admin_login(input):
         elif input == 'changepassword':
             return render_template('admin-' + input + '.html', values=locals())
         else:
-            return render_template('admin-' + input + '.html', values=locals())
+            return render_template('admin-panel.html', values=locals())
 
     elif current_user.access_level == 3:
         em = Employee.query.filter_by(id=current_user.id).first()
@@ -336,7 +336,7 @@ def admin_login(input):
         elif input == 'changepassword':
             return render_template('admin-' + input + '.html', values=locals())
         else:
-            return render_template('admin-' + input + '.html', values=locals())
+            return render_template('admin-panel.html', values=locals())
     else:
         return redirect(url_for('logout'))
 
