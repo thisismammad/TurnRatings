@@ -46,7 +46,7 @@
         </div>
         <div class="navmenu">
             <ul class="navmenu-group">
-                <li class="navmenu-item"><a href="{{ url_for('home') }}" class="navmenu-item__link">صفحه اصلی</a></li>
+                <li class="navmenu-item"><a href="{{ url_for('logout') }}" class="navmenu-item__link">صفحه اصلی</a></li>
             </ul>
         </div>
         <div class="introduction">
@@ -56,12 +56,10 @@
             <p class="form__help">این بخش مخصوص کارمندان و پرسنل مراکز درمانی می باشد. کاربران با وارد کردن نام کاربری و
                 کلمه عبور میتوانند وارد صفحه مدیریتی مخصوص به خود شوند.</p>
         </div>
-        <form action="{{ url_for('admin_login', input='panel') }}">
+        <form action="{{ url_for('login') }}" method="POST">
             <div class="form">
-
-
-                <input type="text" class="form-control form__input" placeholder="نام کاربری">
-                <input type="text" class="form-control form__input" placeholder="کلمه عبور">
+                <input name="user" type="text" class="form-control form__input" placeholder="نام کاربری" required>
+                <input name="password" type="password" class="form-control form__input" placeholder="کلمه عبور" required>
                 <input type="submit" class="btn btn-info from-buttom" value="ورود به پنل">
             </div>
         </form>

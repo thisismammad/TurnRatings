@@ -393,3 +393,59 @@ $("#select_doctor_report").change(function () {
             }
     });
 });
+
+
+$("#select_position").change(function () {
+    let positions = $(this).val();
+    $.ajax({
+        url: '/load-medicals-admin',
+        data: {"medical_id": positions},
+        type: 'POST',
+        success: function (response) {
+            console.log("---------------load-medicals--------------");
+            $("#medicals").empty()
+            $("#medicals").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
+            if (positions == 0 || positions == 1) {
+                $("#medicals").empty()
+            } else {
+                for (const m in response["medicals"]) {
+                    let option = $("<option></option>")
+                    $(option).text(response["medicals"][m]["medical_name"]);
+                    $(option).val(response["medicals"][m]["medical_id"]);
+                    $("#medicals").append(option);
+                }
+            }
+        },
+        error: function (error) {
+            console.log("---------------error--------------");
+        }
+    });
+});
+
+
+$("#select_position_edit").change(function () {
+    let positions = $(this).val();
+    $.ajax({
+        url: '/load-medicals-admin',
+        data: {"medical_id": positions},
+        type: 'POST',
+        success: function (response) {
+            console.log("---------------load-medicals--------------");
+            $("#medicals_edit").empty()
+            $("#medicals_edit").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
+            if (positions == 0 || positions == 1) {
+                $("#medicals_edit").empty()
+            } else {
+                for (const m in response["medicals"]) {
+                    let option = $("<option></option>")
+                    $(option).text(response["medicals"][m]["medical_name"]);
+                    $(option).val(response["medicals"][m]["medical_id"]);
+                    $("#medicals_edit").append(option);
+                }
+            }
+        },
+        error: function (error) {
+            console.log("---------------error--------------");
+        }
+    });
+});

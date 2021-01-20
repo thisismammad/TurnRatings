@@ -40,7 +40,6 @@
                     </div>
                 </form>
 
-
                 {% if values["is_search"] == True %}
                     <form id="edit_sick" action="{{ url_for('edit_sick' , sick_id = values['sick'].id) }}"
                           method="POST">
@@ -138,14 +137,9 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
-
-
                         </div>
-
                     </div>
-
                 {% elif values["is_search"] == False %}
-
 
                     <div class="row">
                         <div class="result-container">
@@ -157,6 +151,9 @@
                                     <th scope="col">کد ملی بیمار</th>
                                     <th scope="col">تخصص</th>
                                     <th scope="col">پزشک</th>
+                                    {% if values['access_level'] == 1 %}
+                                        <th scope="col">مرکز درمانی</th>
+                                    {% endif %}
                                     <th scope="col">تاریخ</th>
                                     <th scope="col">وضعیت</th>
                                     <th scope="col">عملیات</th>
@@ -169,6 +166,9 @@
                                         <td>{{ turn["sick"] }}</td>
                                         <td>{{ turn["speciality"] }}</td>
                                         <td>{{ turn["doctor"] }}</td>
+                                        {% if values['access_level'] == 1 %}
+                                            <td>{{ turn["medical"] }}</td>
+                                        {% endif %}
                                         <td>{{ turn["date"] }}</td>
                                         {% if turn["status"] == 0 %}
                                             <td>لغو شده</td>
@@ -195,19 +195,10 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
-
-
                         </div>
 
                     </div>
-
-
-
-
-
                 {% endif %}
-
-
             </div>
         </div>
 

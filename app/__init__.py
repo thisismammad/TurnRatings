@@ -8,6 +8,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///DataBase.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'login_page'
 
 from app import routes
