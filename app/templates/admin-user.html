@@ -140,12 +140,12 @@
                             {% endif %}
                             <td>
                                 <a style="text-decoration: none;" href="#" data-toggle="modal"
-                                   data-target="#modal-delete-item">حذف</a>
+                                   data-target="#delete-{{ user['id'] }}">حذف</a>
                                 <span>|</span>
                                 <a style="text-decoration: none;" href="#" data-toggle="modal"
-                                   data-target="#modal-id-{{ user['id'] }}">ویرایش</a>
+                                   data-target="#edit-{{ user['id'] }}">ویرایش</a>
                                 <form action="{{ url_for('delete_user', user_id= user["id"]) }}" method="POST">
-                                    <div class="modal fade" id="modal-delete-item" tabindex="-1" role="dialog"
+                                    <div class="modal fade" id="delete-{{ user['id'] }}" tabindex="-1" role="dialog"
                                          aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -166,7 +166,7 @@
                                     </div>
                                 </form>
                                 <form action="{{ url_for('edit_user', user_id= user['id']) }}" method="POST">
-                                    <div class="modal fade" id="modal-id-{{ user['id'] }}" tabindex="-1" role="dialog"
+                                    <div class="modal fade" id="edit-{{ user['id'] }}" tabindex="-1" role="dialog"
                                          aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog col-6" role="document">
                                             <div class="modal-content">

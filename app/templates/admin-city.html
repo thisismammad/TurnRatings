@@ -80,16 +80,16 @@
                             <td>{{ city.name }}</td>
                             <td>
                                 <a style="text-decoration: none;" href="#" data-toggle="modal"
-                                   data-target="#modal-delete-item">حذف</a>
+                                   data-target="#delete-{{ city.id }}">حذف</a>
 
                                 <span>|</span>
 
                                 <a style="text-decoration: none;" href="#" data-toggle="modal"
-                                   data-target="#modal-edit-item">ویرایش</a>
+                                   data-target="#edit-{{ city.id }}">ویرایش</a>
 
 
                                 <form action="{{ url_for('delete_city', city_id = city.id) }}" method="POST">
-                                    <div class="modal fade" id="modal-delete-item" tabindex="-1" role="dialog"
+                                    <div class="modal fade" id="delete-{{ city.id }}" tabindex="-1" role="dialog"
                                          aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -112,7 +112,7 @@
 
 
                                 <form action="{{ url_for('edit_city', city_id= city.id) }}" method="POST">
-                                    <div class="modal fade" id="modal-edit-item" tabindex="-1" role="dialog"
+                                    <div class="modal fade" id="edit-{{ city.id }}" tabindex="-1" role="dialog"
                                          aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog col-6" role="document">
                                             <div class="modal-content">

@@ -133,16 +133,16 @@
                             <td>{{ doctor['medical'] }}</td>
                             <td>
                                 <a style="text-decoration: none;" href="#" data-toggle="modal"
-                                   data-target="#modal-delete-item">حذف</a>
+                                   data-target="#delete-{{ doctor["id"] }}">حذف</a>
 
                                 <span>|</span>
 
                                 <a style="text-decoration: none;" href="#" data-toggle="modal"
-                                   data-target="#modal-edit-item">ویرایش</a>
+                                   data-target="#edit-{{ doctor["id"] }}">ویرایش</a>
 
                             </td>
                             <form action="{{ url_for('delete_doctor', doctor_id = doctor["id"]) }}" method="POST">
-                                <div class="modal fade" id="modal-delete-item" tabindex="-1" role="dialog"
+                                <div class="modal fade" id="delete-{{ doctor["id"] }}" tabindex="-1" role="dialog"
                                      aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
@@ -165,7 +165,7 @@
 
 
                             <form action="{{ url_for('edit_doctor', doctor_id = doctor["id"]) }}" method="POST">
-                                <div class="modal fade" id="modal-edit-item" tabindex="-1" role="dialog"
+                                <div class="modal fade" id="edit-{{ doctor["id"] }}" tabindex="-1" role="dialog"
                                      aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog col-6" role="document">
                                         <div class="modal-content">
