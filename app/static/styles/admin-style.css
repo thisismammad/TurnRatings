@@ -179,3 +179,7 @@ body {
     justify-content: space-between;
 }
 
+
+#eye:hover{
+  cursor: pointer;
+}

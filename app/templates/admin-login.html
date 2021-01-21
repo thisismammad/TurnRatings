@@ -46,7 +46,7 @@
         </div>
         <div class="navmenu">
             <ul class="navmenu-group">
-                <li class="navmenu-item"><a href="{{ url_for('logout') }}" class="navmenu-item__link">صفحه اصلی</a></li>
+                <li class="navmenu-item"><a href="{{ url_for('home') }}" class="navmenu-item__link">صفحه اصلی</a></li>
             </ul>
         </div>
         <div class="introduction">
@@ -59,8 +59,14 @@
         <form action="{{ url_for('login') }}" method="POST">
             <div class="form">
                 <input name="user" type="text" class="form-control form__input" placeholder="نام کاربری" required>
-                <input name="password" type="password" class="form-control form__input " placeholder="کلمه عبور"
+                <input name="password" id="password" type="password" class="form-control form__input "
+                       placeholder="کلمه عبور"
                        required>
+                <input type="checkbox" id="eye"
+                       onclick="if(password.type=='text')password.type='password'; else password.type='text';"/>
+                <label class="form-check-label"  for="flexCheckChecked">
+                    نمایش رمز عبور
+                </label>
                 <input type="submit" class="btn btn-info from-buttom" value="ورود به پنل">
             </div>
         </form>
