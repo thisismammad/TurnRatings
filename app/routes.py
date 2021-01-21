@@ -28,22 +28,17 @@ def logout():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if current_user.is_authenticated:
-        print("is autane-----")
         return redirect(url_for('admin_login', input='panel'))
     if not request.form['user'] or not request.form['password']:
-        print('empty')
         flash('نام کاربری و رمز عبور را وارد کنید', category='danger')
         return redirect(url_for('login_page'))
     else:
         try:
-            print('else')
             entry_user = int(request.form['user'])
             login_password = request.form['password']
             user = User.query.filter_by(id=entry_user).first()
-            print(user)
             if user:
                 if check_password_hash(user.password, login_password):
-                    print("check pass")
                     login_user(user)
                     return redirect(url_for('admin_login', input='panel'))
                 else:
@@ -251,6 +246,7 @@ def admin_login(input):
 
     elif current_user.access_level == 2:
         em = Employee.query.filter_by(id=current_user.id).first()
+        medical = Medical.query.filter_by(id=em.medical).first()
         access_level = current_user.access_level
         if input == 'user':
             data.clear()
@@ -263,6 +259,21 @@ def admin_login(input):
                                  "position": employee.position,
                                  "phone": '0' + str(employee.phone)
                                  })
+            return render_template('admin-' + input + '.html', values=locals())
+        elif input == 'doctor':
+            em = Employee.query.filter_by(id=current_user.id).first()
+            data.clear()
+            for doctor in Doctor.query.filter_by(medical=em.medical):
+                if doctor.status == 1:
+                    medical = Medical.query.filter_by(id=doctor.medical).first()
+                    sp = Specialty.query.filter_by(id=doctor.specialty).first()
+                    data.append({"id": doctor.id,
+                                 "name": doctor.name,
+                                 "last_name": doctor.last_name,
+                                 "NC": doctor.NC,
+                                 "phone": '0' + str(doctor.phone),
+                                 "medical": medical.name,
+                                 "speciality": sp.name})
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'reception':
             data.clear()
@@ -510,6 +521,9 @@ def add_user():
                 flash(' نام و نام خانوادگی نباید شامل عدد باشد', category='danger')
                 return redirect(url_for('admin_login', input='user'))
             else:
+                if current_user.access_level == 2:
+                    if int(request.form['position']) == 1:
+                        return redirect(url_for('admin_login', input='panel'))
                 try:
                     user_id = int(request.form['id'])
                     try:
@@ -683,10 +697,6 @@ def edit_medical(medical_id):
                                                      address=request.form['new_address'].strip(),
                                                      phone=new_phone,
                                                      city=request.form['new_city'])
-                        print(request.form['new_name'])
-                        print(new_medical)
-                        print(comparison_medical)
-                        print(new_medical == comparison_medical)
                         if not new_medical == comparison_medical:
                             new_medical.name = request.form["new_name"]
                             new_medical.phone = new_phone
@@ -831,9 +841,6 @@ def edit_doctor(doctor_id):
                                                            phone=phone,
                                                            specialty=request.form['new_medical'],
                                                            medical=request.form['new_specialty'])
-                                print(new_doctor)
-                                print(comparison_doctor)
-                                print(new_doctor == comparison_doctor)
                                 if not new_doctor == comparison_doctor:
                                     new_doctor.name = request.form["new_name"]
                                     new_doctor.last_name = request.form["new_last_name"]
@@ -898,6 +905,9 @@ def edit_user(user_id):
                 flash(' نام و نام خانوادگی نباید شامل عدد باشد', category='danger')
                 return redirect(url_for('admin_login', input='user'))
             else:
+                if current_user.access_level == 2:
+                    if int(request.form['new_position']) == 1:
+                        return redirect(url_for('admin_login', input='panel'))
                 try:
                     NC = int(request.form['new_NC'])
                     try:
@@ -952,18 +962,19 @@ def change_password():
                 and request.form["new_password"] \
                 and request.form["confirm_password"]:
             if check_password_hash(current_user.password, request.form["old_password"]):
-                if check_password_hash(current_user.password, request.form["old_password"]):
-                    if len(request.form["new_password"]) > 8:
+                if len(request.form["new_password"]) >= 8:
+                    if request.form["new_password"] == request.form["confirm_password"]:
                         current_user.password = generate_password_hash(request.form["new_password"])
                         db.session.commit()
                         flash('رمز عبور با موفقیت تغییر کرد', category='success')
                         return redirect(url_for("admin_login", input="changepassword"))
                     else:
-                        flash('رمز عبور باید حداقل 8 کاراکتر باشد ', category='danger')
+                        flash('رمز عبور جدید و تکرار آن یکی نیست', category='danger')
                         return redirect(url_for("admin_login", input="changepassword"))
                 else:
-                    flash('رمز عبور جدید و تکرار آن یکی نیست', category='danger')
+                    flash('رمز عبور باید حداقل 8 کاراکتر باشد ', category='danger')
                     return redirect(url_for("admin_login", input="changepassword"))
+
             else:
                 flash('رمز عبور قدیمی وارد شده صحیح نیست', category='danger')
                 return redirect(url_for("admin_login", input="changepassword"))
@@ -1172,7 +1183,6 @@ def reporting():
                     if not filter_by[i]:
                         del filter_by[i]
 
-                print(filter_by)
                 for item in data.copy():
                     for k, v in filter_by.items():
                         if k == "city":
@@ -1191,7 +1201,6 @@ def reporting():
                             t_t_city = City.query.filter_by(id=t_t_medical.city).first()
                             if item in data:
                                 if not item["medical"] == t_t_medical.name + '-' + t_t_city.name:
-                                    print("delete item by medical")
                                     data.remove(item)
 
                         if k == "doctor":
@@ -1200,7 +1209,6 @@ def reporting():
                             if item in data:
                                 if not item[
                                            "doctor"] == t_t_doctor.name + ' ' + t_t_doctor.last_name + '-' + t_t_specialty.name:
-                                    print("delete item by doctor")
                                     data.remove(item)
                 if "sp" in filter_by.keys():
                     dc = Doctor.query.filter_by(specialty=filter_by["sp"]).first()
@@ -1213,7 +1221,6 @@ def reporting():
                     else:
                         data.clear()
                         return render_template('admin-report.html', values=locals())
-            print(locals()["data"])
             return render_template('admin-report.html', values=locals())
         return redirect(url_for('admin_login', input='report'))
     else:
@@ -1268,14 +1275,9 @@ def add_turn_user():
             try:
                 NC = int(request.form['NC'])
                 try:
-                    print(len(request.form["phone"]))
                     phone = int(request.form['phone'])
-                    print(phone)
-                    print(len(str(phone)))
-                    print(request.form['medical'])
                     if len(str(NC)) == 10:
                         if len(str(phone)) == 10:
-                            print("in phone if")
                             doctor = Doctor.query.filter_by(id=int(request.form['doctor'])).first()
                             if doctor.daily_capacity > 0:
                                 sick = Sick.query.filter_by(NC=NC).first()
@@ -1290,16 +1292,13 @@ def add_turn_user():
                                     db.session.commit()
                                     flash('نوبت با موفقت ثبت شد', category='success')
                                 else:
-                                    print("else sick exist")
                                     el_sick = Sick(NC=NC,
                                                    name=request.form['name'],
                                                    last_name=request.form['last_name'],
                                                    phone=phone)
-                                    print(el_sick)
                                     db.session.add(el_sick)
                                     db.session.commit()
                                     get_sick = Sick.query.filter_by(NC=NC).first()
-                                    print(get_sick)
                                     turn = Turn(sick=get_sick.id,
                                                 doctor=doctor.id,
                                                 medical=int(request.form['medical']))
@@ -1337,7 +1336,6 @@ def load_medicals_admin():
         for medical in Medical.query.all():
             medicals.append({"medical_name": medical.name,
                              "medical_id": medical.id})
-        print(medicals)
         return {"medicals": medicals}
     else:
         return redirect(url_for('admin_login', input='panel'))

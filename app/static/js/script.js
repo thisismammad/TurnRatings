@@ -449,3 +449,14 @@ $("#select_position_edit").change(function () {
         }
     });
 });
+
+$(".reveal").on('click',function() {
+    var $pwd = $(".pwd");
+    if ($pwd.attr('type') === 'password') {
+        $pwd.attr('type', 'text');
+        console.log("+++++++++++++++++++++++++=")
+    } else {
+        $pwd.attr('type', 'password');
+        console.log("_____________________")
+    }
+});
