@@ -987,8 +987,11 @@ def reset_password(user_id):
     if current_user.access_level == 1 or current_user.access_level == 2:
         if request.method == "GET":
             employee = Employee.query.filter_by(id=int(user_id)).first()
-            user = User.query.filter_by(id=employee.id)
+            user = User.query.filter_by(id=employee.id).first()
             user.password = generate_password_hash(str(employee.NC))
+            print(user)
+            print(employee)
+            print(str(employee.NC))
             db.session.commit()
             flash('رمز عبور به کدملی کارمند تغییر یافت', category="success")
             return redirect(url_for("admin_login", input="user"))
