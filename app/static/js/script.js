@@ -407,6 +407,7 @@ $("#select_position").change(function () {
             $("#medicals").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
             if (positions == 0 || positions == 1) {
                 $("#medicals").empty()
+                $("#medicals").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
             } else {
                 for (const m in response["medicals"]) {
                     let option = $("<option></option>")
@@ -435,6 +436,7 @@ $("#select_position_edit").change(function () {
             $("#medicals_edit").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
             if (positions == 0 || positions == 1) {
                 $("#medicals_edit").empty()
+                $("#medicals_edit").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
             } else {
                 for (const m in response["medicals"]) {
                     let option = $("<option></option>")

@@ -84,6 +84,9 @@
                                                 <label>مرکز درمانی :</label>
                                                 {% if values['access_level'] == 1 %}
                                                     <select id="medicals" class="form-control" name="medical">
+                                                        <option value="0" selected hidden>مرکز درمانی را انتخاب کنید
+                                                            ...
+                                                        </option>
                                                     </select>
                                                 {% elif values['access_level'] == 2 %}
                                                     <select class="form-control" name="medical">
@@ -106,9 +109,6 @@
                         </form>
                     </li>
                 </ul>
-            </div>
-            <div class="search">
-                <input class="form-control col-md-4 col-12" type="text" placeholder=" نام کارمند را وارد کنید">
             </div>
             <div class="result-container">
 
@@ -242,17 +242,25 @@
                                                     <div class="form-group col-12">
                                                         <label>مرکز درمانی :</label>
                                                         <select id="medicals_edit" class="form-control"
-                                                                name="new_medical" required>
+                                                                name="new_medical">
                                                             </option>
                                                             {% if values['access_level'] == 1 %}
-                                                                {% for medical in values['medicals'] %}
-                                                                    {% if medical.name == user["medical"] %}
-                                                                        <option value="{{ medical.id }}"
-                                                                                selected>{{ medical.name }}</option>
-                                                                    {% else %}
-                                                                        <option value="{{ medical.id }}">{{ medical.name }}</option>
-                                                                    {% endif %}
-                                                                {% endfor %}
+                                                                {% if user['position'] != 1 %}
+                                                                    {% for medical in values['medicals'] %}
+                                                                        {% if medical.name == user["medical"] %}
+                                                                            <option value="{{ medical.id }}"
+                                                                                    selected>{{ medical.name }}</option>
+                                                                        {% else %}
+                                                                            <option value="{{ medical.id }}">{{ medical.name }}</option>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                {% else %}
+                                                                    <option value="0" selected hidden>مرکز درمانی را
+                                                                        انتخاب کنید
+                                                                        ...
+                                                                    </option>
+                                                                {% endif %}
+
                                                             {% elif values['access_level'] == 2 %}
                                                                 <option value="{{ values['medical']['id'] }}"
                                                                         selected

@@ -1,21 +1,25 @@
-from flask import render_template, request, flash, redirect, url_for
+from flask import render_template, request, flash, redirect, url_for, session, abort
 from app import app
 from app.models import *
 import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
 
-curent_sick_NC = 0
 searched = False
 
 
 @app.route('/')
 def home():
-    return render_template('login.html')
+    if session.get("NC"):
+        return redirect(url_for("panel"))
+    else:
+        return render_template('login.html')
 
 
 @app.route('/login-page')
 def login_page():
+    if current_user.is_authenticated:
+        return redirect(url_for('admin_login', input='panel'))
     return render_template('admin-login.html')
 
 
@@ -54,15 +58,14 @@ def login():
 
 @app.route('/user-panel', methods=['POST', 'GET'])
 def panel():
-    global curent_sick_NC
     if request.method == "POST":
         if request.form['NC']:
             try:
                 nc = int(request.form['NC'])
                 if len(str(nc)) == 10:
-                    curent_sick_NC = nc
-                    if not Sick.query.filter_by(NC=curent_sick_NC).first():
-                        sick = Sick(NC=curent_sick_NC)
+                    session["NC"] = nc
+                    if not Sick.query.filter_by(NC=nc).first():
+                        sick = Sick(NC=nc)
                         db.session.add(sick)
                         db.session.commit()
                     return render_template('panel.html')
@@ -73,38 +76,42 @@ def panel():
         else:
             flash("کد ملی را وارد کنید", category='danger')
     elif request.method == "GET":
-        return render_template('panel.html')
+        return redirect(url_for('home'))
     return redirect(url_for('home'))
 
 
 @app.route('/user-turn', methods=['GET'])
 def user_turn():
     date = datetime.date.today()
-    NC = curent_sick_NC
-    cites = []
-    for city in City.query.all():
-        cites.append(city)
-    render_template('turn.html', values=locals())
-    return render_template('turn.html', values=locals())
+    if session.get("NC"):
+        cites = []
+        for city in City.query.all():
+            cites.append(city)
+        render_template('turn.html', values=locals())
+    else:
+        abort(404)
 
 
 @app.route('/user-report', methods=['GET'])
 def user_report():
     turns = []
-    sick = Sick.query.filter_by(NC=curent_sick_NC).first()
-    for turn in Turn.query.filter_by(sick=sick.id):
-        doctor = Doctor.query.filter_by(id=turn.doctor).first()
-        medical = Medical.query.filter_by(id=turn.medical).first()
-        specialty = Specialty.query.filter_by(id=doctor.specialty).first()
-        city = City.query.filter_by(id=medical.city).first()
-        turns.append({"id": turn.id,
-                      "sick": curent_sick_NC,
-                      "speciality": specialty.name,
-                      "doctor": doctor.name + '-' + doctor.last_name,
-                      "date": turn.date.date(),
-                      "medical": city.name + '-' + medical.name,
-                      "status": turn.status})
-    return render_template('report.html', values=locals())
+    if session.get("NC"):
+        sick = Sick.query.filter_by(NC=session.get("NC")).first()
+        for turn in Turn.query.filter_by(sick=sick.id):
+            doctor = Doctor.query.filter_by(id=turn.doctor).first()
+            medical = Medical.query.filter_by(id=turn.medical).first()
+            specialty = Specialty.query.filter_by(id=doctor.specialty).first()
+            city = City.query.filter_by(id=medical.city).first()
+            turns.append({"id": turn.id,
+                          "sick": session.get("NC"),
+                          "speciality": specialty.name,
+                          "doctor": doctor.name + '-' + doctor.last_name,
+                          "date": turn.date.date(),
+                          "medical": city.name + '-' + medical.name,
+                          "status": turn.status})
+        return render_template('report.html', values=locals())
+    else:
+        abort(404)
 
 
 @app.route('/<input>', methods=['GET', 'POST'])
@@ -526,8 +533,7 @@ def add_user():
                     or not request.form['last_name'] or any(char.isdigit() for char in request.form['last_name']) \
                     or not request.form['NC'] \
                     or not request.form['phone'] \
-                    or not request.form['position'] or request.form['position'] == '0' \
-                    or not request.form['medical']:
+                    or not request.form['position'] or request.form['position'] == '0':
                 flash('پر کردن تمام فیلد ها ضروری است.', category='danger')
                 flash(' نام و نام خانوادگی نباید شامل عدد باشد', category='danger')
                 return redirect(url_for('admin_login', input='user'))
@@ -544,13 +550,22 @@ def add_user():
                             if len(str(user_id)) == 10:
                                 if len(str(NC)) == 10:
                                     if len(str(phone)) == 10:
-                                        employee = Employee(id=user_id,
-                                                            NC=NC,
-                                                            name=request.form['name'],
-                                                            last_name=request.form['last_name'],
-                                                            phone=phone,
-                                                            position=int(request.form['position']),
-                                                            medical=request.form['medical'])
+                                        print(request.form['medical'])
+                                        if request.form["medical"] != '0':
+                                            employee = Employee(id=user_id,
+                                                                NC=NC,
+                                                                name=request.form['name'],
+                                                                last_name=request.form['last_name'],
+                                                                phone=phone,
+                                                                position=int(request.form['position']),
+                                                                medical=int(request.form['medical']))
+                                        else:
+                                            employee = Employee(id=user_id,
+                                                                NC=NC,
+                                                                name=request.form['name'],
+                                                                last_name=request.form['last_name'],
+                                                                phone=phone,
+                                                                position=int(request.form['position']))
                                         user = User(id=employee.id,
                                                     password=generate_password_hash(str(employee.NC)),
                                                     access_level=employee.position)
@@ -602,29 +617,34 @@ def add_turn():
             redirect(url_for('user_turn'))
         else:
             try:
-                phone = int(request.form['phone'])
-                if len(str(phone)) == 10:
-                    doctor = Doctor.query.filter_by(id=int(request.form['doctor'])).first()
-                    if doctor.daily_capacity > 0:
-                        sick = Sick.query.filter_by(NC=curent_sick_NC).first()
-                        turn = Turn(sick=sick.id,
-                                    doctor=doctor.id,
-                                    medical=int(request.form['medical']))
+                if session.get("NC"):
+                    phone = int(request.form['phone'])
+                    if len(str(phone)) == 10:
+                        doctor = Doctor.query.filter_by(id=int(request.form['doctor'])).first()
+                        if doctor.daily_capacity > 0:
+                            sick = Sick.query.filter_by(NC=session.get("NC")).first()
+                            turn = Turn(sick=sick.id,
+                                        doctor=doctor.id,
+                                        medical=int(request.form['medical']))
 
-                        sick.phone = phone
-                        db.session.add(turn)
-                        doctor.daily_capacity = doctor.daily_capacity - 1
-                        db.session.commit()
-                        flash('نوبت با موفقت ثبت شد', category='success')
-                        flash('میتوانید از صفحه پیگیری نویت ، نوبت های خود را پیگیری کنید', category='success')
-                        return redirect(url_for('panel'))
+                            sick.phone = phone
+                            db.session.add(turn)
+                            doctor.daily_capacity = doctor.daily_capacity - 1
+                            db.session.commit()
+                            flash('نوبت با موفقت ثبت شد', category='success')
+                            flash('میتوانید از صفحه پیگیری نویت ، نوبت های خود را پیگیری کنید', category='success')
+                            return redirect(url_for('panel'))
+                        else:
+                            flash('تعداد نوبت روزانه پزشک موردنظر به پایان رسیده است', category='danger')
+                            return redirect(url_for('user_turn'))
                     else:
-                        flash('تعداد نوبت روزانه پزشک موردنظر به پایان رسیده است', category='danger')
+                        flash(
+                            'شماره تلفن وارد شده صحیح نیست. شماره را بدون +98 وارد کرده و شماره تلفن ثابت را نیز با 076 '
+                            'وارد کنید', category='danger')
                         return redirect(url_for('user_turn'))
                 else:
-                    flash('شماره تلفن وارد شده صحیح نیست. شماره را بدون +98 وارد کرده و شماره تلفن ثابت را نیز با 076 '
-                          'وارد کنید', category='danger')
-                    return redirect(url_for('user_turn'))
+                    abort(404)
+
             except:
                 flash('شماره تلفن وارد شده صحیح نیست. شماره را بدون +98 وارد کرده و شماره تلفن ثابت را نیز با 076 '
                       'وارد کنید', category='danger')
@@ -910,8 +930,7 @@ def edit_user(user_id):
                 char.isdigit() for char in request.form['new_last_name']) \
                     or not request.form['new_NC'] \
                     or not request.form['new_phone'] \
-                    or not request.form['new_position'] \
-                    or not request.form['new_medical']:
+                    or not request.form['new_position']:
                 flash('پر کردن تمام فیلد ها ضروری است.', category='danger')
                 flash(' نام و نام خانوادگی نباید شامل عدد باشد', category='danger')
                 return redirect(url_for('admin_login', input='user'))
@@ -926,23 +945,40 @@ def edit_user(user_id):
                         if len(str(NC)) == 10:
                             if len(str(phone)) == 10:
                                 new_employee = Employee.query.filter_by(id=int(user_id)).first()
-                                comparison_employee = Employee(id=user_id,
-                                                               NC=NC,
-                                                               name=request.form['new_name'],
-                                                               last_name=request.form['new_last_name'],
-                                                               phone=phone,
-                                                               position=int(request.form['new_position']),
-                                                               medical=request.form['new_medical'])
-                                if not new_employee == comparison_employee:
-                                    new_employee.name = request.form["new_name"]
-                                    new_employee.last_name = request.form["new_last_name"]
-                                    new_employee.NC = int(request.form["new_NC"])
-                                    new_employee.phone = int(request.form["new_phone"])
-                                    new_employee.medical = int(request.form["new_medical"])
-                                    new_employee.position = int(request.form["new_position"])
-                                    db.session.commit()
-                                    flash('اطلاعات جدید با موفقیت ثبت شد', 'success')
-                                    return redirect(url_for('admin_login', input='user'))
+                                if request.form['new_medical'] != "0":
+                                    comparison_employee = Employee(id=user_id,
+                                                                   NC=NC,
+                                                                   name=request.form['new_name'],
+                                                                   last_name=request.form['new_last_name'],
+                                                                   phone=phone,
+                                                                   position=int(request.form['new_position']),
+                                                                   medical=request.form['new_medical'])
+                                    if not new_employee == comparison_employee:
+                                        new_employee.name = request.form["new_name"]
+                                        new_employee.last_name = request.form["new_last_name"]
+                                        new_employee.NC = int(request.form["new_NC"])
+                                        new_employee.phone = int(request.form["new_phone"])
+                                        new_employee.medical = int(request.form["new_medical"])
+                                        new_employee.position = int(request.form["new_position"])
+                                        db.session.commit()
+                                        flash('اطلاعات جدید با موفقیت ثبت شد', 'success')
+                                        return redirect(url_for('admin_login', input='user'))
+                                else:
+                                    comparison_employee = Employee(id=user_id,
+                                                                   NC=NC,
+                                                                   name=request.form['new_name'],
+                                                                   last_name=request.form['new_last_name'],
+                                                                   phone=phone,
+                                                                   position=int(request.form['new_position']))
+                                    if not new_employee == comparison_employee:
+                                        new_employee.name = request.form["new_name"]
+                                        new_employee.last_name = request.form["new_last_name"]
+                                        new_employee.NC = int(request.form["new_NC"])
+                                        new_employee.phone = int(request.form["new_phone"])
+                                        new_employee.position = int(request.form["new_position"])
+                                        db.session.commit()
+                                        flash('اطلاعات جدید با موفقیت ثبت شد', 'success')
+                                        return redirect(url_for('admin_login', input='user'))
                             else:
                                 flash(
                                     'شماره تلفن وارد شده صحیح نیست. شماره را بدون +98 وارد کرده و شماره تلفن ثابت را نیز '
@@ -1024,10 +1060,18 @@ def reception(turn_id):
 @app.route('/cancel-turn', methods=['POST', 'GET'])
 def cancel_turn():
     turn = Turn.query.filter_by(id=int(request.form["turn_id"])).first()
-    turn.status = 0
-    db.session.commit()
-    flash('نوبت باموفقت لغو شد', category='success')
-    return redirect(url_for("user_report"))
+    if session.get("NC"):
+        if turn.person.NC == session.get("NC"):
+            if turn.status != 0:
+                turn.status = 0
+                db.session.commit()
+                flash('نوبت باموفقت لغو شد', category='success')
+        else:
+            flash('دسترسی غیر مجاز', category='danger')
+        return redirect(url_for("user_report"))
+
+    else:
+        abort(404)
 
 
 @app.route('/search-sick', methods=['POST', 'GET'])
@@ -1359,6 +1403,7 @@ def add_turn_user():
 
 
 @app.route('/load-medicals-admin', methods=['POST'])
+@login_required
 def load_medicals_admin():
     if current_user.access_level == 1 or current_user.access_level == 2:
         medicals = []
@@ -1368,3 +1413,9 @@ def load_medicals_admin():
         return {"medicals": medicals}
     else:
         return redirect(url_for('admin_login', input='panel'))
+
+
+@app.route('/sick-logout', methods=['GET'])
+def sick_logout():
+    session.clear()
+    return redirect(url_for('home'))

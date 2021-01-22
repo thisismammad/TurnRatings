@@ -1,6 +1,7 @@
 import datetime
 from app import db, login_manager
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash
 
 
 @login_manager.user_loader
@@ -10,8 +11,8 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.BigInteger, db.ForeignKey("employee.id"), nullable=False, primary_key=True)
-    password = db.Column(db.String(60), nullable=False)
-    access_level = db.Column(db.SmallInteger, db.ForeignKey("employee.status"), nullable=False)
+    password = db.Column(db.String(500), nullable=False)
+    access_level = db.Column(db.SmallInteger, db.ForeignKey("employee.position"), nullable=False)
 
     def __repr__(self):
         return f"User({self.id}','{self.password}','{self.access_level}')"
@@ -23,7 +24,7 @@ class Employee(db.Model):
     last_name = db.Column(db.String(60), nullable=False)
     NC = db.Column(db.BigInteger, nullable=False)
     phone = db.Column(db.BigInteger, nullable=False)
-    medical = db.Column(db.Integer, db.ForeignKey("medical.id"), nullable=False)
+    medical = db.Column(db.Integer, db.ForeignKey("medical.id"), nullable=True)
     position = db.Column(db.SmallInteger, nullable=False)
     status = db.Column(db.SmallInteger, default=1)
 
@@ -116,6 +117,7 @@ class Medical(db.Model):
 class Turn(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     sick = db.Column(db.Integer, db.ForeignKey("sick.id"), nullable=False)
+    person = db.relation("Sick", backref="turns")
     doctor = db.Column(db.Integer, db.ForeignKey("doctor.id"), nullable=False)
     medical = db.Column(db.Integer, db.ForeignKey("medical.id"), nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.date.today())
@@ -141,3 +143,14 @@ class Specialty(db.Model):
 
     def __repr__(self):
         return f"Specialty('{self.id}','{self.name}')"
+
+
+def migrate():
+    db.create_all()
+    em = Employee(id=1, name='نام', last_name='نام خانوادگی', NC=1, phone=9999999999, position=1)
+    db.session.add(em)
+    db.session.commit()
+    user = User(id=em.id, password=generate_password_hash(str(em.NC)), access_level=em.position)
+    db.session.add(user)
+    db.session.commit()
+    print('یوزر پیشفرض شما 1 و رمز عبور پیشفرض شما 1 می باشد')
