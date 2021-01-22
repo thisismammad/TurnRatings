@@ -67,14 +67,14 @@
                             <label>شهر:</label>
                             <select id="select_city" class="form-control" name="city" required>
                                 <option value="{{ values['city']['id'] }}" selected
-                                        disabled>{{ values['city']['name'] }} </option>
+                                        >{{ values['city']['name'] }} </option>
                             </select>
                         </div>
                         <div class="form-group col-md-4 col-12">
                             <label>مرکز درمانی:</label>
                             <select id="select_medical" class="form-control" name="medical" required>
                                 <option value="{{ values['medical']['id'] }}" selected
-                                        disabled>{{ values['medical']['name'] }} </option>
+                                        >{{ values['medical']['name'] }} </option>
                             </select>
                         </div>
                     {% endif %}
@@ -82,12 +82,14 @@
                         <label>تخصص:</label>
                         <select id="select_specialties" class="form-control" name="speciality" required>
                             <option value="0" selected disabled hidden>تخصص را انتخاب کنید ...</option>
+                            {% for sp in values['specialties'] %}
+                                 <option value="{{ sp['sp_id'] }}" >{{ sp['sp_name'] }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group col-md-4 col-12">
                         <label>پزشک:</label>
                         <select id="select_doctor" class="form-control" name="doctor" required>
-                            <option value="0" selected disabled hidden>پزشک را انتخاب کنید ...</option>
                         </select>
                     </div>
                     <div class="form-group col-md-4 col-12 d-flex justify-content-center">

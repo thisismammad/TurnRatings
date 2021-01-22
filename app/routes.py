@@ -219,19 +219,23 @@ def admin_login(input):
         elif input == 'report':
             specialties = []
             for speciality in Specialty.query.all():
-                specialties.append(speciality)
+                if speciality.status == 1 and speciality not in specialties:
+                    specialties.append(speciality)
 
             medicals = []
             for medical in Medical.query.all():
-                medicals.append(medical)
+                if medical.status == 1:
+                    medicals.append(medical)
 
             doctors = []
             for doctor in Doctor.query.all():
-                doctors.append(doctor)
+                if doctor.status == 1:
+                    doctors.append(doctor)
 
             cities = []
             for city in City.query.all():
-                cities.append(city)
+                if city.status == 1:
+                    cities.append(city)
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'turn':
             date = datetime.date.today()
@@ -261,7 +265,6 @@ def admin_login(input):
                                  })
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'doctor':
-            em = Employee.query.filter_by(id=current_user.id).first()
             data.clear()
             for doctor in Doctor.query.filter_by(medical=em.medical):
                 if doctor.status == 1:
@@ -310,6 +313,14 @@ def admin_login(input):
             medical = Medical.query.filter_by(id=em.medical).first()
             city = City.query.filter_by(id=medical.city).first()
             date = datetime.date.today()
+            specialties = []
+            if Doctor.query.filter_by(medical=medical.id):
+                for doctor in Doctor.query.filter_by(medical=medical.id):
+                    if doctor.daily_capacity > 0:
+                        specialty = Specialty.query.filter_by(id=doctor.specialty).first()
+                        if specialty.name not in specialties:
+                            specialties.append({"sp_name": specialty.name,
+                                                "sp_id": specialty.id})
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'changepassword':
             return render_template('admin-' + input + '.html', values=locals())
@@ -1114,26 +1125,44 @@ def edit_sick(sick_id):
 @login_required
 def reporting():
     if current_user.access_level == 1 or current_user.access_level == 2:
+        access_level = current_user.access_level
         if request.method == "POST":
             if not request.form["start_date"] or not request.form["end_date"]:
                 flash('انتخاب تاریخ شروع و پایان الزامی است', category='danger')
                 return redirect(url_for('admin_login', input='report'))
             else:
-                specialties = []
-                for speciality in Specialty.query.all():
-                    specialties.append(speciality)
+                if current_user.access_level == 1:
+                    specialties = []
+                    for speciality in Specialty.query.all():
+                        if speciality.status == 1 and speciality not in specialties:
+                            specialties.append(speciality)
 
-                medicals = []
-                for medical in Medical.query.all():
-                    medicals.append(medical)
+                    medicals = []
+                    for medical in Medical.query.all():
+                        if medical.status == 1:
+                            medicals.append(medical)
 
-                doctors = []
-                for doctor in Doctor.query.all():
-                    doctors.append(doctor)
+                    doctors = []
+                    for doctor in Doctor.query.all():
+                        if doctor.status == 1:
+                            doctors.append(doctor)
 
-                cities = []
-                for city in City.query.all():
-                    cities.append(city)
+                    cities = []
+                    for city in City.query.all():
+                        if city.status == 1:
+                            cities.append(city)
+                elif current_user.access_level == 2:
+                    doctors = []
+                    specialties = []
+                    em1 = Employee.query.filter_by(id=current_user.id).first()
+                    medical = Medical.query.filter_by(id=em1.medical).first()
+                    for doctor in Doctor.query.filter_by(medical=medical.id):
+                        if doctor.status == 1:
+                            doctors.append(doctor)
+                            for speciality in Specialty.query.filter_by(id=doctor.specialty):
+                                if speciality.status == 1 and not speciality in specialties:
+                                    specialties.append(speciality)
+                    city = City.query.filter_by(id=medical.city).first()
 
                 data = []
                 s_date = str(request.form["start_date"]).split('-')
@@ -1172,7 +1201,7 @@ def reporting():
                                  "medical": medical.name + '-' + city.name,
                                  "date": turn.date.date(),
                                  "status": status})
-
+                print(request.form["city"])
                 city_id = int(request.form["city"])
                 medical_id = int(request.form["medical"])
                 speciality_id = int(request.form["speciality"])
