@@ -147,10 +147,10 @@ class Specialty(db.Model):
 
 def migrate():
     db.create_all()
-    em = Employee(id=1, name='نام', last_name='نام خانوادگی', NC=1, phone=9999999999, position=1)
+    em = Employee(id=1, name='name', last_name='last name', NC=1, phone=9999999999, position=1)
     db.session.add(em)
     db.session.commit()
     user = User(id=em.id, password=generate_password_hash(str(em.NC)), access_level=em.position)
     db.session.add(user)
     db.session.commit()
-    print('یوزر پیشفرض شما 1 و رمز عبور پیشفرض شما 1 می باشد')
+    print('Your default username is 1 and your default password is 1')

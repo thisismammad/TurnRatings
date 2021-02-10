@@ -76,7 +76,11 @@ def panel():
         else:
             flash("کد ملی را وارد کنید", category='danger')
     elif request.method == "GET":
-        return redirect(url_for('home'))
+        if session.get("NC"):
+            return render_template('panel.html')
+        else:
+            session.clear()
+            return redirect(url_for('home'))
     return redirect(url_for('home'))
 
 
@@ -84,10 +88,11 @@ def panel():
 def user_turn():
     date = datetime.date.today()
     if session.get("NC"):
+        NC = session.get("NC")
         cites = []
         for city in City.query.all():
             cites.append(city)
-        render_template('turn.html', values=locals())
+        return render_template('turn.html', values=locals())
     else:
         abort(404)
 
@@ -614,7 +619,7 @@ def add_turn():
                 or not request.form['speciality'] or request.form['speciality'] == '0' \
                 or not request.form['doctor'] or request.form['doctor'] == '0':
             flash('پر کردن تمام فیلد ها ضروری است', category='danger')
-            redirect(url_for('user_turn'))
+            return redirect(url_for('user_turn'))
         else:
             try:
                 if session.get("NC"):
@@ -1108,7 +1113,7 @@ def search_sick():
         flash('بیمار با این کد ملی در سیستم وجود ندارد', category='danger')
         searched = False
         is_search = searched
-        redirect(url_for('admin_login', input="reception"))
+        return redirect(url_for('admin_login', input="reception"))
     return render_template('admin-reception.html', values=locals())
 
 
@@ -1343,7 +1348,7 @@ def add_turn_user():
                 or not request.form['speciality'] or request.form['speciality'] == '0' \
                 or not request.form['doctor'] or request.form['doctor'] == '0':
             flash('پر کردن تمام فیلد ها ضروری است', category='danger')
-            redirect(url_for('user_turn_user'))
+            return redirect(url_for('user_turn_user'))
         else:
             try:
                 NC = int(request.form['NC'])
