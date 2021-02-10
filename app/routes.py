@@ -68,7 +68,7 @@ def panel():
                         sick = Sick(NC=nc)
                         db.session.add(sick)
                         db.session.commit()
-                    return render_template('panel.html')
+                    return redirect(url_for("panel"))
                 else:
                     flash("کد ملی وارد شده صحیح نیست کد ملی باید دقیقا 10 رقم عددی باشد", category='danger')
             except:
