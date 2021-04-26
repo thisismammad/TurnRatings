@@ -1084,6 +1084,7 @@ def cancel_turn():
 def search_sick():
     data = []
     global searched
+    access_level = current_user.access_level
     sick = Sick.query.filter_by(NC=int(request.form["sick_NC"])).first()
     if sick:
         searched = True
