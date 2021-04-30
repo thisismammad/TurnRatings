@@ -146,6 +146,7 @@ class Specialty(db.Model):
 
 
 def migrate():
+    db.drop_all()
     db.create_all()
     em = Employee(id=1, name='name', last_name='last name', NC=1, phone=9999999999, position=1)
     db.session.add(em)

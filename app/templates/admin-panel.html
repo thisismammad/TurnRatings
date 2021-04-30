@@ -22,6 +22,13 @@
         </div>
         <div class="nav-menu">
             {% if values['access_level'] == 1 %}
+            
+            <div class="nav-menu-group">
+                <div class="nav-group-item">
+                    <a class="nav-group-item__link" href="{{ url_for('admin_login', input='city') }}">شهرها</a>
+                </div>
+            </div>
+            
                 <div class="nav-menu-group">
                     <div class="nav-group-item">
                         <a class="nav-group-item__link" href="{{ url_for('admin_login', input='medical') }}">مراکز
@@ -29,11 +36,6 @@
                     </div>
                 </div>
 
-                <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='city') }}">شهرها</a>
-                    </div>
-                </div>
 
                 <div class="nav-menu-group">
                     <div class="nav-group-item">

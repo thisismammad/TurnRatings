@@ -424,7 +424,7 @@ $("#select_position").change(function () {
 });
 
 
-$("#select_position_edit").change(function () {
+$(".select_position_edit").change(function () {
     let positions = $(this).val();
     $.ajax({
         url: '/load-medicals-admin',
@@ -432,17 +432,22 @@ $("#select_position_edit").change(function () {
         type: 'POST',
         success: function (response) {
             console.log("---------------load-medicals--------------");
-            $("#medicals_edit").empty()
-            $("#medicals_edit").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
+            $(".medicals_edit").empty()
+            $(".medicals_edit").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
+            console.log("---------------ed po 1--------------");
+            console.log(positions);
             if (positions == 0 || positions == 1) {
-                $("#medicals_edit").empty()
-                $("#medicals_edit").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
+                $(".medicals_edit").empty()
+                $(".medicals_edit").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
+                console.log("---------------ed po 2--------------");
             } else {
+            console.log("---------------ed po 3--------------");
+
                 for (const m in response["medicals"]) {
                     let option = $("<option></option>")
                     $(option).text(response["medicals"][m]["medical_name"]);
                     $(option).val(response["medicals"][m]["medical_id"]);
-                    $("#medicals_edit").append(option);
+                    $(".medicals_edit").append(option);
                 }
             }
         },
@@ -462,3 +467,13 @@ $(".reveal").on('click',function() {
         console.log("_____________________")
     }
 });
+
+$('#modal-add-item').on('hidden.bs.modal', function (e) {
+    $(this)
+      .find("input,textarea,select")
+         .val('')
+         .end()
+      .find("input[type=checkbox], input[type=radio]")
+         .prop("checked", "")
+         .end();
+  })

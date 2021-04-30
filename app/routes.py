@@ -556,15 +556,19 @@ def add_user():
                                 if len(str(NC)) == 10:
                                     if len(str(phone)) == 10:
                                         print(request.form['medical'])
-                                        if request.form["medical"] != '0':
-                                            employee = Employee(id=user_id,
-                                                                NC=NC,
-                                                                name=request.form['name'],
-                                                                last_name=request.form['last_name'],
-                                                                phone=phone,
-                                                                position=int(request.form['position']),
-                                                                medical=int(request.form['medical']))
-                                        else:
+                                        if request.form["position"] == '2' or request.form["position"] == '3':
+                                            if request.form['medical'] != '0':
+                                                employee = Employee(id=user_id,
+                                                                    NC=NC,
+                                                                    name=request.form['name'],
+                                                                    last_name=request.form['last_name'],
+                                                                    phone=phone,
+                                                                    position=int(request.form['position']),
+                                                                    medical=int(request.form['medical']))
+                                            else:
+                                                flash('انتخاب مرکز درمانی برای مدیر و کارمندان مراکز درمانی الزامی است.', category='danger')
+                                                return redirect(url_for('admin_login', input='user'))
+                                        elif request.form["position"] == '1':
                                             employee = Employee(id=user_id,
                                                                 NC=NC,
                                                                 name=request.form['name'],
@@ -574,7 +578,32 @@ def add_user():
                                         user = User(id=employee.id,
                                                     password=generate_password_hash(str(employee.NC)),
                                                     access_level=employee.position)
-                                        db.session.add(employee)
+                                        if Employee.query.filter_by(id=int(user_id)).first():
+                                            new_employee = Employee.query.filter_by(id=int(user_id)).first()
+                                            print(new_employee)
+                                            if request.form["position"] == '2' or request.form["position"] == '3':
+                                                if request.form['medical'] != '0':
+                                                    new_employee.name = request.form["name"]
+                                                    new_employee.last_name = request.form["last_name"]
+                                                    new_employee.NC = NC
+                                                    new_employee.phone = phone
+                                                    new_employee.medical = int(request.form["medical"])
+                                                    new_employee.position = int(request.form["position"])
+                                                    new_employee.status = 1
+                                                else:
+                                                    flash('انتخاب مرکز درمانی برای مدیر و کارمندان مراکز درمانی الزامی است.', category='danger')
+                                                    return redirect(url_for('admin_login', input='user'))
+                                            elif request.form["position"] == '1':
+                                                new_employee.name = request.form["name"]
+                                                new_employee.last_name = request.form["last_name"]
+                                                new_employee.NC = NC
+                                                new_employee.phone = phone
+                                                new_employee.medical = "null"
+                                                new_employee.position = int(request.form["position"])
+                                                new_employee.status = 1
+                                        else:
+                                            db.session.add(employee)
+                                    
                                         db.session.add(user)
                                         db.session.commit()
                                         flash('کارمند با موفقت اضافه شد', 'success')
@@ -916,7 +945,7 @@ def delete_user(user_id):
         if request.method == "POST":
             employee = Employee.query.filter_by(id=int(user_id)).first()
             employee.status = 0
-            user = User.query.filter_by(id).delete()
+            User.query.filter_by(id=int(user_id)).delete()
             db.session.commit()
             flash('کارمند با موفقیت حذف شد', category='success')
             return redirect(url_for("admin_login", input="user"))
@@ -950,39 +979,48 @@ def edit_user(user_id):
                         if len(str(NC)) == 10:
                             if len(str(phone)) == 10:
                                 new_employee = Employee.query.filter_by(id=int(user_id)).first()
-                                if request.form['new_medical'] != "0":
-                                    comparison_employee = Employee(id=user_id,
-                                                                   NC=NC,
-                                                                   name=request.form['new_name'],
-                                                                   last_name=request.form['new_last_name'],
-                                                                   phone=phone,
-                                                                   position=int(request.form['new_position']),
-                                                                   medical=request.form['new_medical'])
-                                    if not new_employee == comparison_employee:
-                                        new_employee.name = request.form["new_name"]
-                                        new_employee.last_name = request.form["new_last_name"]
-                                        new_employee.NC = int(request.form["new_NC"])
-                                        new_employee.phone = int(request.form["new_phone"])
-                                        new_employee.medical = int(request.form["new_medical"])
-                                        new_employee.position = int(request.form["new_position"])
-                                        db.session.commit()
-                                        flash('اطلاعات جدید با موفقیت ثبت شد', 'success')
+                                if request.form["new_position"] == '2' or request.form["new_position"] == '3':
+                                    if request.form['new_medical'] != "0":
+                                        comparison_employee = Employee(id=user_id,
+                                                                    NC=NC,
+                                                                    name=request.form['new_name'],
+                                                                    last_name=request.form['new_last_name'],
+                                                                    phone=phone,
+                                                                    position=int(request.form['new_position']),
+                                                                    medical=request.form['new_medical'])
+                                        if not new_employee == comparison_employee:
+                                            new_employee.name = request.form["new_name"]
+                                            new_employee.last_name = request.form["new_last_name"]
+                                            new_employee.NC = int(request.form["new_NC"])
+                                            new_employee.phone = int(request.form["new_phone"])
+                                            new_employee.medical = int(request.form["new_medical"])
+                                            new_employee.position = int(request.form["new_position"])
+                                            User.query.filter_by(id = new_employee.id).first().access_level = new_employee.position
+                                            db.session.commit()
+                                            flash('اطلاعات جدید با موفقیت ثبت شد', 'success')
+                                            return redirect(url_for('admin_login', input='user'))
+                                    else:
+                                        flash('انتخاب مرکز درمانی برای مدیر و کارمندان مراکز درمانی الزامی است.', category='danger')
                                         return redirect(url_for('admin_login', input='user'))
-                                else:
+                                elif request.form["new_position"] == '1':
                                     comparison_employee = Employee(id=user_id,
-                                                                   NC=NC,
-                                                                   name=request.form['new_name'],
-                                                                   last_name=request.form['new_last_name'],
-                                                                   phone=phone,
-                                                                   position=int(request.form['new_position']))
+                                                                NC=NC,
+                                                                name=request.form['new_name'],
+                                                                last_name=request.form['new_last_name'],
+                                                                phone=phone,
+                                                                position=int(request.form['new_position']),
+                                                                medical = "null")
                                     if not new_employee == comparison_employee:
                                         new_employee.name = request.form["new_name"]
                                         new_employee.last_name = request.form["new_last_name"]
                                         new_employee.NC = int(request.form["new_NC"])
                                         new_employee.phone = int(request.form["new_phone"])
                                         new_employee.position = int(request.form["new_position"])
+                                        new_employee.medical = "null"
+                                        User.query.filter_by(id = new_employee.id).first().access_level = new_employee.position
                                         db.session.commit()
                                         flash('اطلاعات جدید با موفقیت ثبت شد', 'success')
+                                
                                         return redirect(url_for('admin_login', input='user'))
                             else:
                                 flash(
