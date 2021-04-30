@@ -52,11 +52,12 @@ body {
     border-right: 5px solid transparent;
 }
 
-.nav-group-item:hover {
+.nav-group-item:hover,.nav-menu-group:hover {
     background-color: #535353;
     border-radius: 20px 0 0 20px;
-
     border-right: 5px solid rgb(0, 165, 241);
+    color: #ffffff;
+    text-decoration: none;
 }
 
 .nav-group-item__link {
@@ -103,11 +104,18 @@ body {
 .operation {
     width: 100%;
     display: inline-block;
+    display: flex;
+    align-items: center;
+    margin-top: 7px;
 }
+
 
 .operation-group {
     display: inline-block;
+    padding-right: 10px;
+    margin-bottom: 0;
 }
+
 
 .operation-item {
     float: right;
@@ -183,3 +191,29 @@ body {
 #eye:hover{
   cursor: pointer;
 }
+
+.dataTables_wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 500px !important;
+    }
+
+    .dataTables_filter {
+    text-align: start !important;
+    }
+
+    .dataTables_wrapper .row:first-child .col-sm-12:first-child,
+    .dataTables_wrapper .row:nth-child(3) .col-sm-12:first-child {
+    display: none;
+    }
+
+    .dataTables_wrapper .row:first-child .col-sm-12:nth-child(2),
+    .dataTables_wrapper .row:nth-child(3) .col-sm-12:nth-child(2) {
+    flex: 0 0 100%;
+    max-width: 100%;
+    }
+
+    .dataTables_wrapper .row:nth-child(3) .col-sm-12:nth-child(2) {
+    display: flex;
+    justify-content: flex-end;
+    }

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='styles/fonts.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='styles/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='styles/bootstrap_rtl.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='styles/admin-style.css') }}">
     <link rel="icon" href="data:,">
 </head>
@@ -24,108 +25,102 @@
             {% if values['access_level'] == 1 %}
             
             <div class="nav-menu-group">
-                <div class="nav-group-item">
-                    <a class="nav-group-item__link" href="{{ url_for('admin_login', input='city') }}">شهرها</a>
-                </div>
+                <a class="nav-group-item" href="{{ url_for('admin_login', input='city') }}">
+                    <div class="nav-group-item__link" >شهرها</div>
+                </a>
             </div>
             
                 <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='medical') }}">مراکز
-                            درمانی</a>
-                    </div>
+                    <a class="nav-group-item" href="{{ url_for('admin_login', input='medical') }}">
+                        <div class="nav-group-item__link" >مراکز
+                            درمانی</div>
+                        </a>
                 </div>
 
 
                 <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='speciality') }}">تخصص
-                            ها</a>
-                    </div>
+                    <a class="nav-group-item" href="{{ url_for('admin_login', input='speciality') }}">
+                        <div class="nav-group-item__link" >تخصص
+                            ها</div>
+                        </a>
                 </div>
 
                 <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='doctor') }}">پزشکان</a>
-                    </div>
+                    <a class="nav-group-item" href="{{ url_for('admin_login', input='doctor') }}">
+                        <div class="nav-group-item__link" >پزشکان</div>
+                    </a>
                 </div>
-                {##}
-                {#                <div class="nav-menu-group">#}
-                {#                    <div class="nav-group-item">#}
-                {#                        <a class="nav-group-item__link" href="#">بیماران</a>#}
-                {#                    </div>#}
-                {#                </div>#}
 
                 <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='user') }}">کاربران</a>
-                    </div>
+                    <a class="nav-group-item" href="{{ url_for('admin_login', input='user') }}">
+                        <div class="nav-group-item__link" >کاربران</div>
+                    </a>
                 </div>
                 <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='report') }}">گزارشات</a>
-                    </div>
+                    <a class="nav-group-item" href="{{ url_for('admin_login', input='report') }}">
+                        <div class="nav-group-item__link">گزارشات</div>
+                    </a>
                 </div>
                 <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='reception') }}">پذیرش</a>
-                    </div>
+                    <a class="nav-group-item" href="{{ url_for('admin_login', input='reception') }}">
+                        <div class="nav-group-item__link" >پذیرش</div>
+                    </a>
                 </div>
                 <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='turn') }}">نوبت دهی</a>
-                    </div>
+                    <a class="nav-group-item" href="{{ url_for('admin_login', input='turn') }}">
+                        <div class="nav-group-item__link" >نوبت دهی</div>
+                    </a>
                 </div>
             {% elif values['access_level'] == 2 %}
-                <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='doctor') }}">پزشکان</a>
-                    </div>
-                </div>
-
-                <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='user') }}">کاربران</a>
-                    </div>
-                </div>
-                <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='report') }}">گزارشات</a>
-                    </div>
-                </div>
-                <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='reception') }}">پذیرش</a>
-                    </div>
-                </div>
-                <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='turn') }}">نوبت دهی</a>
-                    </div>
-                </div>
-            {% elif values['access_level'] == 3 %}
-                <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='reception') }}">پذیرش</a>
-                    </div>
-                </div>
-                <div class="nav-menu-group">
-                    <div class="nav-group-item">
-                        <a class="nav-group-item__link" href="{{ url_for('admin_login', input='turn') }}">نوبت دهی</a>
-                    </div>
-                </div>
-            {% endif %}
             <div class="nav-menu-group">
-                <div class="nav-group-item">
-                    <a class="nav-group-item__link" href="{{ url_for('admin_login', input='changepassword') }}">تغییر
-                        کلمه عبور</a>
-                </div>
+                <a class="nav-group-item" href="{{ url_for('admin_login', input='doctor') }}">
+                    <div class="nav-group-item__link" >پزشکان</div>
+                </a>
             </div>
 
             <div class="nav-menu-group">
-                <div class="nav-group-item">
-                    <a class="nav-group-item__link" href="{{ url_for( 'logout' ) }}">خروج</a>
-                </div>
+                <a class="nav-group-item" href="{{ url_for('admin_login', input='user') }}">
+                    <div class="nav-group-item__link" >کاربران</div>
+                </a>
+            </div>
+            <div class="nav-menu-group">
+                <a class="nav-group-item" href="{{ url_for('admin_login', input='report') }}">
+                    <div class="nav-group-item__link">گزارشات</div>
+                </a>
+            </div>
+            <div class="nav-menu-group">
+                <a class="nav-group-item" href="{{ url_for('admin_login', input='reception') }}">
+                    <div class="nav-group-item__link" >پذیرش</div>
+                </a>
+            </div>
+            <div class="nav-menu-group">
+                <a class="nav-group-item" href="{{ url_for('admin_login', input='turn') }}">
+                    <div class="nav-group-item__link" >نوبت دهی</div>
+                </a>
+            </div>
+            {% elif values['access_level'] == 3 %}
+            <div class="nav-menu-group">
+                <a class="nav-group-item" href="{{ url_for('admin_login', input='reception') }}">
+                    <div class="nav-group-item__link" >پذیرش</div>
+                </a>
+            </div>
+            <div class="nav-menu-group">
+                <a class="nav-group-item" href="{{ url_for('admin_login', input='turn') }}">
+                    <div class="nav-group-item__link" >نوبت دهی</div>
+                </a>
+            </div>
+            {% endif %}
+            <div class="nav-menu-group">
+                <a class="nav-group-item" href="{{ url_for('admin_login', input='changepassword') }}">
+                    <div class="nav-group-item__link" >تغییر
+                        کلمه عبور</div>
+                    </a>
+            </div>
+
+            <div class="nav-menu-group">
+                <a class="nav-group-item" href="{{ url_for( 'logout' ) }}">
+                    <div class="nav-group-item__link">خروج</div>
+                </a>
             </div>
         </div>
     </div>
@@ -136,5 +131,7 @@
 </body>
 <script src="{{ url_for('static',filename='js/jquery-3.5.1.slim.min.js') }}"></script>
 <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static',filename='js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static',filename='js/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ url_for('static',filename='js/script.js') }}"></script>
 </html>
