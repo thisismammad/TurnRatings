@@ -5,7 +5,6 @@ import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
 
-searched = False
 
 
 @app.route('/')
@@ -123,7 +122,6 @@ def user_report():
 @app.route('/<input>', methods=['GET', 'POST'])
 @login_required
 def admin_login(input):
-    global searched
     data = []
     if current_user.access_level == 1:
         access_level = current_user.access_level
@@ -223,15 +221,13 @@ def admin_login(input):
                         data.append({"id": turn.id,
                                      "sick": sick.NC,
                                      "speciality": specialty.name,
-                                     "doctor": doctor.name,
+                                     "doctor": doctor.name+'-'+doctor.last_name,
                                      "date": turn.date.date(),
                                      "medical": medical.name + '-' + city.name,
                                      "status": turn.status})
                 elif turn.date.date() < datetime.date.today():
                     turn.status = 3
                     db.session.commit()
-            searched = False
-            is_search = searched
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'report':
             specialties = []
@@ -308,14 +304,12 @@ def admin_login(input):
                         data.append({"id": turn.id,
                                      "sick": sick.NC,
                                      "speciality": specialty.name,
-                                     "doctor": doctor.name,
+                                     "doctor": doctor.name+'-'+doctor.last_name,
                                      "date": turn.date.date(),
                                      "status": turn.status})
                 elif turn.date.date() < datetime.date.today():
                     turn.status = 3
                     db.session.commit()
-            searched = False
-            is_search = searched
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'report':
             specialties = []
@@ -360,14 +354,12 @@ def admin_login(input):
                         data.append({"id": turn.id,
                                      "sick": sick.NC,
                                      "speciality": specialty.name,
-                                     "doctor": doctor.name,
+                                     "doctor": doctor.name+'-'+doctor.last_name,
                                      "date": turn.date.date(),
                                      "status": turn.status})
                 elif turn.date.date() < datetime.date.today():
                     turn.status = 3
                     db.session.commit()
-            searched = False
-            is_search = searched
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'turn':
             medical = Medical.query.filter_by(id=em.medical).first()
@@ -1157,15 +1149,14 @@ def cancel_turn():
 @login_required
 def search_sick():
     data = []
-    global searched
     access_level = current_user.access_level
     sick = Sick.query.filter_by(NC=int(request.form["sick_NC"])).first()
     if sick:
-        searched = True
-        is_search = searched
+        is_search = True
         for turn in Turn.query.filter_by(sick=sick.id):
             doctor = Doctor.query.filter_by(id=turn.doctor).first()
             medical = Medical.query.filter_by(id=turn.medical).first()
+            city = City.query.filter_by(id=medical.city).first()
             if current_user.access_level == 2 or current_user.access_level == 3:
                 em = Employee.query.filter_by(id=current_user.id).first()
                 if em.medical == medical.id:
@@ -1175,6 +1166,7 @@ def search_sick():
                                  "speciality": specialty.name,
                                  "doctor": doctor.name + '-' + doctor.last_name,
                                  "date": turn.date.date(),
+                                 "medical": medical.name + '-' + city.name,
                                  "status": turn.status})
             else:
                 specialty = Specialty.query.filter_by(id=doctor.specialty).first()
@@ -1183,11 +1175,10 @@ def search_sick():
                              "speciality": specialty.name,
                              "doctor": doctor.name + '-' + doctor.last_name,
                              "date": turn.date.date(),
+                             "medical": medical.name + '-' + city.name,
                              "status": turn.status})
     else:
         flash('بیمار با این کد ملی در سیستم وجود ندارد', category='danger')
-        searched = False
-        is_search = searched
         return redirect(url_for('admin_login', input="reception"))
     return render_template('admin-reception.html', values=locals())
 
@@ -1222,8 +1213,7 @@ def edit_sick(sick_id):
                                 new_sick.NC = new_NC
                                 new_sick.phone = new_phone
                                 db.session.commit()
-                                global searched
-                                searched = False
+                                is_search = False
                                 flash('اطلاعات بیمار بروزرسانی شد', category='success')
                                 return redirect(url_for("admin_login", input="reception"))
                         else:

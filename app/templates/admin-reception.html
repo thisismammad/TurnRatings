@@ -39,8 +39,7 @@
                         </div>
                     </div>
                 </form>
-
-                {% if values["is_search"] == True %}
+                {% if values['is_search'] == True %}
                     <form id="edit_sick" action="{{ url_for('edit_sick' , sick_id = values['sick'].id) }}"
                           method="POST">
                         <div class="row">
@@ -87,118 +86,64 @@
                             </div>
                         </div>
                     </form>
-
-
-
-
-                    <div class="row">
-                        <div class="result-container">
-
-                            <table id="data-tabel" class="table table-striped">
-                                <thead class="thead-dark">
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">تخصص</th>
-                                    <th scope="col">پزشک</th>
-                                    <th scope="col">تاریخ</th>
-                                    <th scope="col">وضعیت</th>
-                                    <th scope="col">عملیات</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for turn in values['data']|reverse %}
-                                    <tr>
-                                        <th scope="row">{{ loop.index }}</th>
-                                        <td>{{ turn["speciality"] }}</td>
-                                        <td>{{ turn["doctor"] }}</td>
-                                        <td>{{ turn["date"] }}</td>
-                                        {% if turn["status"] == 0 %}
-                                            <td>لغو شده</td>
-                                        {% elif turn["status"] == 1 %}
-                                            <td>انتظار</td>
-                                        {% elif turn["status"] == 2 %}
-                                            <td>انجام شده</td>
-                                        {% elif turn["status"] == 3 %}
-                                            <td>منقضی شده</td>
-                                        {% endif %}
-                                        {% if turn["status"] == 1 %}
-                                            <td>
-                                                <form action="{{ url_for('reception' , turn_id= turn["id"]) }}"
-                                                      method="POST">
-                                                    <input type="submit" class="btn btn-sm btn-info" value="پذیرش">
-                                                    <input type="hidden" name="turn_id" class="btn btn-sm btn-info"
-                                                           value="{{ turn["id"] }}">
-                                                </form>
-                                            </td>
-                                        {% else %}
-                                            <td>-</td>
-                                        {% endif %}
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                {% elif values["is_search"] == False %}
-
-                    <div class="row">
-                        <div class="result-container">
-
-                            <table class="table table-striped">
-                                <thead class="thead-dark">
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">کد ملی بیمار</th>
-                                    <th scope="col">تخصص</th>
-                                    <th scope="col">پزشک</th>
-                                    {% if values['access_level'] == 1 %}
-                                        <th scope="col">مرکز درمانی</th>
-                                    {% endif %}
-                                    <th scope="col">تاریخ</th>
-                                    <th scope="col">وضعیت</th>
-                                    <th scope="col">عملیات</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for turn in values['data'] %}
-                                    <tr>
-                                        <th scope="row">{{ loop.index }}</th>
-                                        <td>{{ turn["sick"] }}</td>
-                                        <td>{{ turn["speciality"] }}</td>
-                                        <td>{{ turn["doctor"] }}</td>
-                                        {% if values['access_level'] == 1 %}
-                                            <td>{{ turn["medical"] }}</td>
-                                        {% endif %}
-                                        <td>{{ turn["date"] }}</td>
-                                        {% if turn["status"] == 0 %}
-                                            <td>لغو شده</td>
-                                        {% elif turn["status"] == 1 %}
-                                            <td>انتظار</td>
-                                        {% elif turn["status"] == 2 %}
-                                            <td>انجام شده</td>
-                                        {% elif turn["status"] == 3 %}
-                                            <td>منقضی شده</td>
-                                        {% endif %}
-                                        {% if turn["status"] == 1 %}
-                                            <td>
-                                                <form action="{{ url_for('reception', turn_id= turn["id"]) }}"
-                                                      method="POST">
-                                                    <input type="submit" class="btn btn-sm btn-info" value="پذیرش">
-                                                    <input type="hidden" name="turn_id" class="btn btn-sm btn-info"
-                                                           value="{{ turn["id"] }}">
-                                                </form>
-                                            </td>
-                                        {% else %}
-                                            <td>-</td>
-                                        {% endif %}
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-
-                    </div>
                 {% endif %}
+
+                <div class="row">
+                    <div class="result-container">
+
+                        <table id="data-table" class="table table-striped">
+                            <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">کد ملی بیمار</th>
+                                <th scope="col">تخصص</th>
+                                <th scope="col">پزشک</th>
+                                {% if values['access_level'] == 1 %}
+                                    <th scope="col">مرکز درمانی</th>
+                                {% endif %}
+                                <th scope="col">تاریخ</th>
+                                <th scope="col">وضعیت</th>
+                                <th scope="col">عملیات</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for turn in values['data'] %}
+                                <tr>
+                                    <th scope="row">{{ loop.index }}</th>
+                                    <td>{{ turn["sick"] }}</td>
+                                    <td>{{ turn["speciality"] }}</td>
+                                    <td>{{ turn["doctor"] }}</td>
+                                    {% if values['access_level'] == 1 %}
+                                        <td>{{ turn["medical"] }}</td>
+                                    {% endif %}
+                                    <td>{{ turn["date"] }}</td>
+                                    {% if turn["status"] == 0 %}
+                                        <td>لغو شده</td>
+                                    {% elif turn["status"] == 1 %}
+                                        <td>انتظار</td>
+                                    {% elif turn["status"] == 2 %}
+                                        <td>انجام شده</td>
+                                    {% elif turn["status"] == 3 %}
+                                        <td>منقضی شده</td>
+                                    {% endif %}
+                                    {% if turn["status"] == 1 %}
+                                        <td>
+                                            <form action="{{ url_for('reception', turn_id= turn["id"]) }}"
+                                                  method="POST">
+                                                <input type="submit" class="btn btn-sm btn-info" value="پذیرش">
+                                                <input type="hidden" name="turn_id" class="btn btn-sm btn-info"
+                                                       value="{{ turn["id"] }}">
+                                            </form>
+                                        </td>
+                                    {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 

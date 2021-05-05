@@ -480,7 +480,7 @@ $('#modal-add-item').on('hidden.bs.modal', function (e) {
   })
 
   $(document).ready(function() {
-    $('#data-tabel').DataTable( {
+    $('#data-table').DataTable( {
         language: {
             "sEmptyTable": "هیچ داده‌ای در جدول وجود ندارد",
             "sInfo": "نمایش _START_ تا _END_ از _TOTAL_ ردیف",
