@@ -1290,7 +1290,13 @@ def reporting():
                 if start_date > end_date:
                     flash('تاریخ شروع باید کوچکتر از تاریخ پایان باشد', category='danger')
                     return redirect(url_for('admin_login', input='report'))
-                turn = Turn.query.first()
+                # turn = Turn.query.first()
+                # result = Turn.query.filter(Turn.date >= start_date, Turn.date <= end_date)
+                # result = result.filter()
+                # result = result.filter()
+                # data = result.all()
+                # for d in data:
+
                 for turn in Turn.query.filter(Turn.date >= start_date, Turn.date <= end_date):
                     sick = Sick.query.filter_by(id=turn.sick).first()
                     if not sick.name:
@@ -1364,7 +1370,9 @@ def reporting():
                     else:
                         data.clear()
                         return render_template('admin-report.html', values=locals())
-            return render_template('admin-report.html', values=locals())
+
+            #return render_template('admin-report.html', values=locals())
+            return {"data":data}
         return redirect(url_for('admin_login', input='report'))
     else:
         return redirect(url_for('admin_login', input='panel'))

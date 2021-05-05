@@ -1,3 +1,15 @@
+
+function active_loader() {
+  $(".main-loader").css('display', 'flex')
+}
+function disable_loader() {
+  $(".main-loader").css('display', 'none')
+}
+
+
+
+
+
 $("#select_city").change(function () {
     let value = $(this).val();
     $.ajax({
@@ -412,7 +424,7 @@ $("#select_position").change(function () {
                 for (const m in response["medicals"]) {
                     let option = $("<option></option>")
                     $(option).text(response["medicals"][m]["medical_name"]);
-                     console.log(response["medicals"][m]["medical_name"]);
+                    console.log(response["medicals"][m]["medical_name"]);
                     $(option).val(response["medicals"][m]["medical_id"]);
                     $("#medicals").append(option);
                 }
@@ -442,7 +454,7 @@ $(".select_position_edit").change(function () {
                 $(".medicals_edit").html("<option value=\"0\" selected hidden >مرکز درمانی را انتخاب کنید ...</option>")
                 console.log("---------------ed po 2--------------");
             } else {
-            console.log("---------------ed po 3--------------");
+                console.log("---------------ed po 3--------------");
 
                 for (const m in response["medicals"]) {
                     let option = $("<option></option>")
@@ -458,7 +470,7 @@ $(".select_position_edit").change(function () {
     });
 });
 
-$(".reveal").on('click',function() {
+$(".reveal").on('click', function () {
     var $pwd = $(".pwd");
     if ($pwd.attr('type') === 'password') {
         $pwd.attr('type', 'text');
@@ -471,16 +483,16 @@ $(".reveal").on('click',function() {
 
 $('#modal-add-item').on('hidden.bs.modal', function (e) {
     $(this)
-      .find("input,textarea,select")
-         .val('')
-         .end()
-      .find("input[type=checkbox], input[type=radio]")
-         .prop("checked", "")
-         .end();
-  })
+        .find("input,textarea,select")
+        .val('')
+        .end()
+        .find("input[type=checkbox], input[type=radio]")
+        .prop("checked", "")
+        .end();
+})
 
-  $(document).ready(function() {
-    $('#data-table').DataTable( {
+$(document).ready(function () {
+    $('#data-table').DataTable({
         language: {
             "sEmptyTable": "هیچ داده‌ای در جدول وجود ندارد",
             "sInfo": "نمایش _START_ تا _END_ از _TOTAL_ ردیف",
@@ -494,20 +506,70 @@ $('#modal-add-item').on('hidden.bs.modal', function (e) {
             "searchPlaceholder": "جستجو...",
             "sZeroRecords": "رکوردی با این مشخصات پیدا نشد",
             "oPaginate": {
-              "sFirst": "برگه‌ی نخست",
-              "sLast": "برگه‌ی آخر",
-              "sNext": "بعدی",
-              "sPrevious": "قبلی"
+                "sFirst": "برگه‌ی نخست",
+                "sLast": "برگه‌ی آخر",
+                "sNext": "بعدی",
+                "sPrevious": "قبلی"
             },
             "oAria": {
-              "sSortAscending": ": فعال سازی نمایش به صورت صعودی",
-              "sSortDescending": ": فعال سازی نمایش به صورت نزولی"
+                "sSortAscending": ": فعال سازی نمایش به صورت صعودی",
+                "sSortDescending": ": فعال سازی نمایش به صورت نزولی"
             }
-          },
-          "paging":   false,
-          "order": [],
-          "lengthChange": false,
-          "info": false, 
-    } );
-} );
+        },
+        "paging": false,
+        "order": [],
+        "lengthChange": false,
+        "info": false,
+    });
+});
+
+
+$("#get_report").click(function () {
+    // let positions = $(this).val();
+    active_loader()
+    $("#row_data").empty()
+    $.ajax({
+        url: '/reporting',
+        // data: {"medical_id": positions},
+        data: $('#report_form').serialize(),
+        type: 'POST',
+        success: function (response) {
+            console.log("---------------success--------------");
+            for (const index in response["data"]) {
+                var today = new Date(response["data"][index]["date"]);
+                var dd = today.getDate();
+
+                var mm = today.getMonth() + 1;
+                var yyyy = today.getFullYear();
+                if (dd < 10) {
+                    dd = '0' + dd;
+                }
+
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+                today = mm + '-' + dd + '-' + yyyy;
+                console.log(today);
+                var record = ` <tr>
+                                <th scope="row">${parseInt(index) + 1}</th>
+                                <td>${response["data"][index]["sick_NC"]}</td>
+                                <td>${response["data"][index]["sick_name"]}</td>
+                                <td>${response["data"][index]["doctor"]}</td>
+                                <td>${response["data"][index]["medical"]}</td>
+                                <td>${today}</td>
+                                <td>${response["data"][index]["status"]}</td>
+                            </tr>`
+                $("#row_data").append(record)
+            }
+            disable_loader();
+        },
+        error: function (error) {
+            console.log("---------------error--------------");
+            disable_loader();
+        }
+    });
+});
+
+
+
 
