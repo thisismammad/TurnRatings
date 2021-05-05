@@ -412,6 +412,7 @@ $("#select_position").change(function () {
                 for (const m in response["medicals"]) {
                     let option = $("<option></option>")
                     $(option).text(response["medicals"][m]["medical_name"]);
+                     console.log(response["medicals"][m]["medical_name"]);
                     $(option).val(response["medicals"][m]["medical_id"]);
                     $("#medicals").append(option);
                 }

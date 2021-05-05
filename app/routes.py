@@ -86,12 +86,13 @@ def panel():
 
 @app.route('/user-turn', methods=['GET'])
 def user_turn():
-    date = datetime.date.today()
+    date = datetime.date.today() + datetime.timedelta(days=+1)
     if session.get("NC"):
         NC = session.get("NC")
         cites = []
         for city in City.query.all():
-            cites.append(city)
+            if city.status == 1:
+                cites.append(city)
         return render_template('turn.html', values=locals())
     else:
         abort(404)
@@ -144,12 +145,13 @@ def admin_login(input):
                 if doctor.status == 1:
                     medical = Medical.query.filter_by(id=doctor.medical).first()
                     sp = Specialty.query.filter_by(id=doctor.specialty).first()
+                    city = City.query.filter_by(id=medical.city).first()
                     data.append({"id": doctor.id,
                                  "name": doctor.name,
                                  "last_name": doctor.last_name,
                                  "NC": doctor.NC,
                                  "phone": '0' + str(doctor.phone),
-                                 "medical": medical.name,
+                                 "medical": medical.name + '-' + city.name,
                                  "speciality": sp.name})
             specialties = []
             for speciality in Specialty.query.all():
@@ -159,7 +161,8 @@ def admin_login(input):
             medicals = []
             for medical in Medical.query.all():
                 if medical.status == 1:
-                    medicals.append(medical)
+                    city = City.query.filter_by(id=medical.city).first()
+                    medicals.append({"medical_id": medical.id, "medical_name": medical.name + "-" + city.name})
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'user':
             data.clear()
@@ -167,13 +170,14 @@ def admin_login(input):
                 if employee.status == 1:
                     medical = Medical.query.filter_by(id=employee.medical).first()
                     if medical:
+                        city = City.query.filter_by(id=medical.city).first()
                         data.append({"id": employee.id,
                                      "NC": employee.NC,
                                      "name": employee.name,
                                      "last_name": employee.last_name,
                                      "position": employee.position,
                                      "phone": '0' + str(employee.phone),
-                                     "medical": medical.name,
+                                     "medical": medical.name + "-" + city.name,
                                      })
                     else:
                         data.append({"id": employee.id,
@@ -187,7 +191,8 @@ def admin_login(input):
             medicals = []
             for medical in Medical.query.all():
                 if medical.status == 1:
-                    medicals.append(medical)
+                    city = City.query.filter_by(id=medical.city).first()
+                    medicals.append({"medical_id": medical.id, "medical_name": medical.name + "-" + city.name})
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'medical':
             data.clear()
@@ -222,7 +227,7 @@ def admin_login(input):
                                      "date": turn.date.date(),
                                      "medical": medical.name + '-' + city.name,
                                      "status": turn.status})
-                else:
+                elif turn.date.date() < datetime.date.today():
                     turn.status = 3
                     db.session.commit()
             searched = False
@@ -237,7 +242,8 @@ def admin_login(input):
             medicals = []
             for medical in Medical.query.all():
                 if medical.status == 1:
-                    medicals.append(medical)
+                    city = City.query.filter_by(id=medical.city).first()
+                    medicals.append({"medical_id": medical.id, "medical_name": medical.name + "-" + city.name})
 
             doctors = []
             for doctor in Doctor.query.all():
@@ -250,10 +256,11 @@ def admin_login(input):
                     cities.append(city)
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'turn':
-            date = datetime.date.today()
+            date = datetime.date.today() + datetime.timedelta(days=+1)
             cites = []
             for city in City.query.all():
-                cites.append(city)
+                if city.status == 1:
+                    cites.append(city)
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'changepassword':
             return render_template('admin-' + input + '.html', values=locals())
@@ -304,7 +311,7 @@ def admin_login(input):
                                      "doctor": doctor.name,
                                      "date": turn.date.date(),
                                      "status": turn.status})
-                else:
+                elif turn.date.date() < datetime.date.today():
                     turn.status = 3
                     db.session.commit()
             searched = False
@@ -324,7 +331,7 @@ def admin_login(input):
         elif input == 'turn':
             medical = Medical.query.filter_by(id=em.medical).first()
             city = City.query.filter_by(id=medical.city).first()
-            date = datetime.date.today()
+            date = datetime.date.today() + datetime.timedelta(days=+1)
             specialties = []
             if Doctor.query.filter_by(medical=medical.id):
                 for doctor in Doctor.query.filter_by(medical=medical.id):
@@ -356,7 +363,7 @@ def admin_login(input):
                                      "doctor": doctor.name,
                                      "date": turn.date.date(),
                                      "status": turn.status})
-                else:
+                elif turn.date.date() < datetime.date.today():
                     turn.status = 3
                     db.session.commit()
             searched = False
@@ -365,7 +372,15 @@ def admin_login(input):
         elif input == 'turn':
             medical = Medical.query.filter_by(id=em.medical).first()
             city = City.query.filter_by(id=medical.city).first()
-            date = datetime.date.today()
+            date = datetime.date.today() + datetime.timedelta(days=+1)
+            specialties = []
+            if Doctor.query.filter_by(medical=medical.id):
+                for doctor in Doctor.query.filter_by(medical=medical.id):
+                    if doctor.daily_capacity > 0:
+                        specialty = Specialty.query.filter_by(id=doctor.specialty).first()
+                        if specialty.name not in specialties:
+                            specialties.append({"sp_name": specialty.name,
+                                                "sp_id": specialty.id})
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'changepassword':
             return render_template('admin-' + input + '.html', values=locals())
@@ -566,7 +581,9 @@ def add_user():
                                                                     position=int(request.form['position']),
                                                                     medical=int(request.form['medical']))
                                             else:
-                                                flash('انتخاب مرکز درمانی برای مدیر و کارمندان مراکز درمانی الزامی است.', category='danger')
+                                                flash(
+                                                    'انتخاب مرکز درمانی برای مدیر و کارمندان مراکز درمانی الزامی است.',
+                                                    category='danger')
                                                 return redirect(url_for('admin_login', input='user'))
                                         elif request.form["position"] == '1':
                                             employee = Employee(id=user_id,
@@ -591,7 +608,9 @@ def add_user():
                                                     new_employee.position = int(request.form["position"])
                                                     new_employee.status = 1
                                                 else:
-                                                    flash('انتخاب مرکز درمانی برای مدیر و کارمندان مراکز درمانی الزامی است.', category='danger')
+                                                    flash(
+                                                        'انتخاب مرکز درمانی برای مدیر و کارمندان مراکز درمانی الزامی است.',
+                                                        category='danger')
                                                     return redirect(url_for('admin_login', input='user'))
                                             elif request.form["position"] == '1':
                                                 new_employee.name = request.form["name"]
@@ -603,7 +622,7 @@ def add_user():
                                                 new_employee.status = 1
                                         else:
                                             db.session.add(employee)
-                                    
+
                                         db.session.add(user)
                                         db.session.commit()
                                         flash('کارمند با موفقت اضافه شد', 'success')
@@ -731,6 +750,11 @@ def delete_medical(medical_id):
     if current_user.access_level == 1:
         if request.method == "POST":
             medical = Medical.query.filter_by(id=int(medical_id)).first()
+            for employee in Employee.query.filter_by(medical=medical.id):
+                employee.status = 0
+                User.query.filter_by(id=int(employee.id)).delete()
+            for doctor in Doctor.query.filter_by(medical=medical.id):
+                doctor.status = 0
             medical.status = 0
             db.session.commit()
             flash('مرکز درمانی با موفقیت حذف شد', category='success')
@@ -794,6 +818,13 @@ def delete_city(city_id):
     if current_user.access_level == 1:
         if request.method == "POST":
             city = City.query.filter_by(id=int(city_id)).first()
+            for medical in Medical.query.filter_by(city=city.id):
+                medical.status = 0
+                for employee in Employee.query.filter_by(medical=medical.id):
+                    employee.status = 0
+                    User.query.filter_by(id=int(employee.id)).delete()
+                for doctor in Doctor.query.filter_by(medical=medical.id):
+                    doctor.status = 0
             city.status = 0
             db.session.commit()
             flash('شهر با موفقیت حذف شد', category='success')
@@ -832,6 +863,8 @@ def delete_speciality(speciality_id):
         if request.method == "POST":
             speciality = Specialty.query.filter_by(id=int(speciality_id)).first()
             speciality.status = 0
+            for doctor in Doctor.query.filter_by(specialty=speciality.id):
+                doctor.status = 0
             db.session.commit()
             flash('تخصص با موفقیت حذف شد', category='success')
             return redirect(url_for("admin_login", input="speciality"))
@@ -982,12 +1015,12 @@ def edit_user(user_id):
                                 if request.form["new_position"] == '2' or request.form["new_position"] == '3':
                                     if request.form['new_medical'] != "0":
                                         comparison_employee = Employee(id=user_id,
-                                                                    NC=NC,
-                                                                    name=request.form['new_name'],
-                                                                    last_name=request.form['new_last_name'],
-                                                                    phone=phone,
-                                                                    position=int(request.form['new_position']),
-                                                                    medical=request.form['new_medical'])
+                                                                       NC=NC,
+                                                                       name=request.form['new_name'],
+                                                                       last_name=request.form['new_last_name'],
+                                                                       phone=phone,
+                                                                       position=int(request.form['new_position']),
+                                                                       medical=request.form['new_medical'])
                                         if not new_employee == comparison_employee:
                                             new_employee.name = request.form["new_name"]
                                             new_employee.last_name = request.form["new_last_name"]
@@ -995,21 +1028,23 @@ def edit_user(user_id):
                                             new_employee.phone = int(request.form["new_phone"])
                                             new_employee.medical = int(request.form["new_medical"])
                                             new_employee.position = int(request.form["new_position"])
-                                            User.query.filter_by(id = new_employee.id).first().access_level = new_employee.position
+                                            User.query.filter_by(
+                                                id=new_employee.id).first().access_level = new_employee.position
                                             db.session.commit()
                                             flash('اطلاعات جدید با موفقیت ثبت شد', 'success')
                                             return redirect(url_for('admin_login', input='user'))
                                     else:
-                                        flash('انتخاب مرکز درمانی برای مدیر و کارمندان مراکز درمانی الزامی است.', category='danger')
+                                        flash('انتخاب مرکز درمانی برای مدیر و کارمندان مراکز درمانی الزامی است.',
+                                              category='danger')
                                         return redirect(url_for('admin_login', input='user'))
                                 elif request.form["new_position"] == '1':
                                     comparison_employee = Employee(id=user_id,
-                                                                NC=NC,
-                                                                name=request.form['new_name'],
-                                                                last_name=request.form['new_last_name'],
-                                                                phone=phone,
-                                                                position=int(request.form['new_position']),
-                                                                medical = "null")
+                                                                   NC=NC,
+                                                                   name=request.form['new_name'],
+                                                                   last_name=request.form['new_last_name'],
+                                                                   phone=phone,
+                                                                   position=int(request.form['new_position']),
+                                                                   medical="null")
                                     if not new_employee == comparison_employee:
                                         new_employee.name = request.form["new_name"]
                                         new_employee.last_name = request.form["new_last_name"]
@@ -1017,10 +1052,11 @@ def edit_user(user_id):
                                         new_employee.phone = int(request.form["new_phone"])
                                         new_employee.position = int(request.form["new_position"])
                                         new_employee.medical = "null"
-                                        User.query.filter_by(id = new_employee.id).first().access_level = new_employee.position
+                                        User.query.filter_by(
+                                            id=new_employee.id).first().access_level = new_employee.position
                                         db.session.commit()
                                         flash('اطلاعات جدید با موفقیت ثبت شد', 'success')
-                                
+
                                         return redirect(url_for('admin_login', input='user'))
                             else:
                                 flash(
@@ -1090,7 +1126,7 @@ def reset_password(user_id):
 @app.route('/reception/<turn_id>', methods=['POST', 'GET'])
 @login_required
 def reception(turn_id):
-    if current_user.access_level == 1 or current_user.access_level == 2:
+    if current_user.access_level == 1 or current_user.access_level == 2 or current_user.access_level == 3:
         turn = Turn.query.filter_by(id=int(turn_id)).first()
         turn.status = 2
         db.session.commit()
@@ -1228,7 +1264,8 @@ def reporting():
                     medicals = []
                     for medical in Medical.query.all():
                         if medical.status == 1:
-                            medicals.append(medical)
+                            city = City.query.filter_by(id=medical.city).first()
+                            medicals.append({"medical_id": medical.id, "medical_name": medical.name + "-" + city.name})
 
                     doctors = []
                     for doctor in Doctor.query.all():
@@ -1282,14 +1319,12 @@ def reporting():
                         status = 'انجام شده'
                     elif turn.status == 3:
                         status = 'منقضی شده'
-
                     data.append({"sick_NC": sick.NC,
                                  "sick_name": sick.name + ' ' + sick.last_name,
                                  "doctor": doctor.name + ' ' + doctor.last_name + '-' + sp.name,
                                  "medical": medical.name + '-' + city.name,
                                  "date": turn.date.date(),
                                  "status": status})
-                print(request.form["city"])
                 city_id = int(request.form["city"])
                 medical_id = int(request.form["medical"])
                 speciality_id = int(request.form["speciality"])
@@ -1299,7 +1334,6 @@ def reporting():
                 for i in filter_by.copy():
                     if not filter_by[i]:
                         del filter_by[i]
-
                 for item in data.copy():
                     for k, v in filter_by.items():
                         if k == "city":
@@ -1308,7 +1342,9 @@ def reporting():
                             if md:
                                 for t_medical in Medical.query.filter_by(city=v):
                                     if item in data:
-                                        if not item["medical"] == t_medical.name + '-' + t_city.name:
+                                        if item["medical"] == t_medical.name + '-' + t_city.name:
+                                            break
+                                        elif not item["medical"] == t_medical.name + '-' + t_city.name:
                                             data.remove(item)
                             else:
                                 data.clear()
@@ -1360,8 +1396,9 @@ def load_data_for_report():
                             "doctor_sp": doctor.specialty})
 
         for medical in Medical.query.all():
+            city = City.query.filter_by(id=medical.city).first()
             medicals.append({"medical_id": medical.id,
-                             "medical_name": medical.name,
+                             "medical_name": medical.name + "-" + city.name,
                              "medical_city": medical.city})
         for sp in Specialty.query.all():
             specialties.append({"sp_name": sp.name,
@@ -1452,8 +1489,8 @@ def load_medicals_admin():
     if current_user.access_level == 1 or current_user.access_level == 2:
         medicals = []
         for medical in Medical.query.all():
-            medicals.append({"medical_name": medical.name,
-                             "medical_id": medical.id})
+            city = City.query.filter_by(id=medical.city).first()
+            medicals.append({"medical_id": medical.id, "medical_name": medical.name + "-" + city.name})
         return {"medicals": medicals}
     else:
         return redirect(url_for('admin_login', input='panel'))

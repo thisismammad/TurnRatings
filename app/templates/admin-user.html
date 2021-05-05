@@ -250,11 +250,11 @@
                                                             {% if values['access_level'] == 1 %}
                                                                 {% if user['position'] != 1 %}
                                                                     {% for medical in values['medicals'] %}
-                                                                        {% if medical.name == user["medical"] %}
-                                                                            <option value="{{ medical.id }}"
-                                                                                    selected>{{ medical.name }}</option>
+                                                                        {% if medical["medical_name"] == user["medical"] %}
+                                                                            <option value="{{ medical["medical_id"] }}"
+                                                                                    selected>{{ medical["medical_name"] }}</option>
                                                                         {% else %}
-                                                                            <option value="{{ medical.id }}">{{ medical.name }}</option>
+                                                                            <option value="{{ medical["medical_id"] }}">{{ medical["medical_name"] }}</option>
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 {% else %}

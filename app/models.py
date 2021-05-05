@@ -120,7 +120,7 @@ class Turn(db.Model):
     person = db.relation("Sick", backref="turns")
     doctor = db.Column(db.Integer, db.ForeignKey("doctor.id"), nullable=False)
     medical = db.Column(db.Integer, db.ForeignKey("medical.id"), nullable=False)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.date.today())
+    date = db.Column(db.DateTime, nullable=False, default=datetime.date.today() + datetime.timedelta(days=+1))
     status = db.Column(db.SmallInteger, nullable=False, default=1)
 
     def __repr__(self):

@@ -85,7 +85,7 @@
                                                             کنید ...
                                                         </option>
                                                         {% for medical in values['medicals'] %}
-                                                            <option value="{{ medical.id }}">{{ medical.name }}</option>
+                                                            <option value="{{ medical["medical_id"] }}">{{ medical["medical_name"] }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
@@ -219,10 +219,10 @@
                                                             <select class="form-control" name="new_medical" required>
                                                                 {% for medical in values['medicals'] %}
                                                                     {% if medical.id == doctor.medical %}
-                                                                        <option value="{{ medical.id }} "
-                                                                                selected>{{ medical.name }}</option>
+                                                                        <option value="{{ medical["medical_id"] }} "
+                                                                                selected>{{ medical["medical_name"] }}</option>
                                                                     {% else %}
-                                                                        <option value="{{ medical.id }} ">{{ medical.name }}</option>
+                                                                        <option value="{{ medical["medical_id"] }} ">{{ medical["medical_name"] }}</option>
                                                                     {% endif %}
                                                                 {% endfor %}
                                                             </select>
