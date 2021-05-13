@@ -1240,46 +1240,13 @@ def edit_sick(sick_id):
 def reporting():
     if current_user.access_level == 1 or current_user.access_level == 2:
         access_level = current_user.access_level
+        
         if request.method == "POST":
             error_message = ""
             if not request.form["start_date"] or not request.form["end_date"]:
                 error_message = "انتخاب تاریخ شروع و پایان الزامی است"
                 return {"message":error_message}
             else:
-                if current_user.access_level == 1:
-                    specialties = []
-                    for speciality in Specialty.query.all():
-                        if speciality.status == 1 and speciality not in specialties:
-                            specialties.append(speciality)
-
-                    medicals = []
-                    for medical in Medical.query.all():
-                        if medical.status == 1:
-                            city = City.query.filter_by(id=medical.city).first()
-                            medicals.append({"medical_id": medical.id, "medical_name": medical.name + "-" + city.name})
-
-                    doctors = []
-                    for doctor in Doctor.query.all():
-                        if doctor.status == 1:
-                            doctors.append(doctor)
-
-                    cities = []
-                    for city in City.query.all():
-                        if city.status == 1:
-                            cities.append(city)
-                elif current_user.access_level == 2:
-                    doctors = []
-                    specialties = []
-                    em1 = Employee.query.filter_by(id=current_user.id).first()
-                    medical = Medical.query.filter_by(id=em1.medical).first()
-                    for doctor in Doctor.query.filter_by(medical=medical.id):
-                        if doctor.status == 1:
-                            doctors.append(doctor)
-                            for speciality in Specialty.query.filter_by(id=doctor.specialty):
-                                if speciality.status == 1 and not speciality in specialties:
-                                    specialties.append(speciality)
-                    city = City.query.filter_by(id=medical.city).first()
-
                 data = []
                 s_date = str(request.form["start_date"]).split('-')
                 e_date = str(request.form["end_date"]).split('-')
@@ -1291,8 +1258,39 @@ def reporting():
                 if start_date > end_date:
                     error_message = "تاریخ شروع باید کوچکتر از تاریخ پایان باشد"
                     return {"message":error_message}
-    
-                for turn in Turn.query.filter(Turn.date >= start_date, Turn.date <= end_date):
+
+                city_id = int(request.form["city"])
+                medical_id = int(request.form["medical"])
+                speciality_id = int(request.form["speciality"])
+                doctor_id = int(request.form["doctor"])
+                filter_by = {}
+                filter_by = {"city": city_id, "medical": medical_id, "sp": speciality_id, "doctor": doctor_id}
+                for i in filter_by.copy():
+                    if not filter_by[i]:
+                        del filter_by[i]
+                select_sp = False
+                result = Turn.query.filter(Turn.date >= start_date, Turn.date <= end_date)
+                for k, v in filter_by.items():
+                    if k == "city":
+                        result = result.join(Medical).join(City).filter(City.id == city_id)
+                        print("---city---")
+                        print(result)
+                    if k == "medical":
+                        result = result.filter(Turn.medical == medical_id)
+                        print("---medical---")
+                        print(result)
+                    if k == "doctor":
+                        result = result.filter(Turn.doctor == doctor_id)
+                        print("---doctor---")
+                        print(result)
+                    if k == "sp":
+                        result = result.join(Doctor, Turn.doctor == Doctor.id).join(Specialty, Doctor.specialty == Specialty.id).filter(Specialty.id == speciality_id)
+                        select_sp = True
+                        print("---sp---")
+                        print(result)
+
+
+                for turn in result.all():
                     sick = Sick.query.filter_by(id=turn.sick).first()
                     if not sick.name:
                         sick.name = '-'
@@ -1316,60 +1314,12 @@ def reporting():
                                  "medical": medical.name + '-' + city.name,
                                  "date": turn.date.date(),
                                  "status": status})
-                city_id = int(request.form["city"])
-                medical_id = int(request.form["medical"])
-                speciality_id = int(request.form["speciality"])
-                doctor_id = int(request.form["doctor"])
-                filter_by = {}
-                filter_by = {"city": city_id, "medical": medical_id, "sp": speciality_id, "doctor": doctor_id}
-                for i in filter_by.copy():
-                    if not filter_by[i]:
-                        del filter_by[i]
-                for item in data.copy():
-                    for k, v in filter_by.items():
-                        if k == "city":
-                            t_city = City.query.filter_by(id=v).first()
-                            md = Medical.query.filter_by(city=v).first()
-                            if md:
-                                for t_medical in Medical.query.filter_by(city=v):
-                                    if item in data:
-                                        if item["medical"] == t_medical.name + '-' + t_city.name:
-                                            break
-                                        elif not item["medical"] == t_medical.name + '-' + t_city.name:
-                                            data.remove(item)
-                            else:
-                                data.clear()
-                                return render_template('admin-report.html', values=locals())
-                        if k == "medical":
-                            t_t_medical = Medical.query.filter_by(id=v).first()
-                            t_t_city = City.query.filter_by(id=t_t_medical.city).first()
-                            if item in data:
-                                if not item["medical"] == t_t_medical.name + '-' + t_t_city.name:
-                                    data.remove(item)
-
-                        if k == "doctor":
-                            t_t_doctor = Doctor.query.filter_by(id=v).first()
-                            t_t_specialty = Specialty.query.filter_by(id=t_t_doctor.id).first()
-                            if item in data:
-                                if not item[
-                                           "doctor"] == t_t_doctor.name + ' ' + t_t_doctor.last_name + '-' + t_t_specialty.name:
-                                    data.remove(item)
-                if "sp" in filter_by.keys():
-                    dc = Doctor.query.filter_by(specialty=filter_by["sp"]).first()
-                    if dc:
-                        specialty = Specialty.query.filter_by(id=filter_by["sp"]).first()
-                        for item in data.copy():
-                            s_item = item["doctor"].split("-")[1]
-                            if s_item != specialty.name:
-                                data.remove(item)
-                    else:
-                        data.clear()
-                        return render_template('admin-report.html', values=locals())
-
+            print(error_message)
             return {"data":data, "message":error_message}
         return redirect(url_for('admin_login', input='report'))
     else:
         return redirect(url_for('admin_login', input='panel'))
+
 
 
 @app.route('/load-data-for-report', methods=['GET', 'POST'])
