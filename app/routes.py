@@ -1241,9 +1241,10 @@ def reporting():
     if current_user.access_level == 1 or current_user.access_level == 2:
         access_level = current_user.access_level
         if request.method == "POST":
+            error_message = ""
             if not request.form["start_date"] or not request.form["end_date"]:
-                flash('انتخاب تاریخ شروع و پایان الزامی است', category='danger')
-                return redirect(url_for('admin_login', input='report'))
+                error_message = "انتخاب تاریخ شروع و پایان الزامی است"
+                return {"message":error_message}
             else:
                 if current_user.access_level == 1:
                     specialties = []
@@ -1288,15 +1289,9 @@ def reporting():
                 end_date = datetime.datetime(int(e_date[0]), int(e_date[1]), int(e_date[2]))
 
                 if start_date > end_date:
-                    flash('تاریخ شروع باید کوچکتر از تاریخ پایان باشد', category='danger')
-                    return redirect(url_for('admin_login', input='report'))
-                # turn = Turn.query.first()
-                # result = Turn.query.filter(Turn.date >= start_date, Turn.date <= end_date)
-                # result = result.filter()
-                # result = result.filter()
-                # data = result.all()
-                # for d in data:
-
+                    error_message = "تاریخ شروع باید کوچکتر از تاریخ پایان باشد"
+                    return {"message":error_message}
+    
                 for turn in Turn.query.filter(Turn.date >= start_date, Turn.date <= end_date):
                     sick = Sick.query.filter_by(id=turn.sick).first()
                     if not sick.name:
@@ -1371,8 +1366,7 @@ def reporting():
                         data.clear()
                         return render_template('admin-report.html', values=locals())
 
-            #return render_template('admin-report.html', values=locals())
-            return {"data":data}
+            return {"data":data, "message":error_message}
         return redirect(url_for('admin_login', input='report'))
     else:
         return redirect(url_for('admin_login', input='panel'))

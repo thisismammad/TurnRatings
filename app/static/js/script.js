@@ -535,32 +535,50 @@ $("#get_report").click(function () {
         type: 'POST',
         success: function (response) {
             console.log("---------------success--------------");
-            for (const index in response["data"]) {
-                var today = new Date(response["data"][index]["date"]);
-                var dd = today.getDate();
+            console.log(response["message"]);
 
-                var mm = today.getMonth() + 1;
-                var yyyy = today.getFullYear();
-                if (dd < 10) {
-                    dd = '0' + dd;
-                }
 
-                if (mm < 10) {
-                    mm = '0' + mm;
+
+
+            if(response["message"] == ""){
+
+                for (const index in response["data"]) {
+                    var today = new Date(response["data"][index]["date"]);
+                    var dd = today.getDate();
+
+                    var mm = today.getMonth() + 1;
+                    var yyyy = today.getFullYear();
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    today = mm + '-' + dd + '-' + yyyy;
+                    console.log(today);
+                    var record = ` <tr>
+                                    <th scope="row">${parseInt(index) + 1}</th>
+                                    <td>${response["data"][index]["sick_NC"]}</td>
+                                    <td>${response["data"][index]["sick_name"]}</td>
+                                    <td>${response["data"][index]["doctor"]}</td>
+                                    <td>${response["data"][index]["medical"]}</td>
+                                    <td>${today}</td>
+                                    <td>${response["data"][index]["status"]}</td>
+                                </tr>`
+                    $("#row_data").append(record)
                 }
-                today = mm + '-' + dd + '-' + yyyy;
-                console.log(today);
-                var record = ` <tr>
-                                <th scope="row">${parseInt(index) + 1}</th>
-                                <td>${response["data"][index]["sick_NC"]}</td>
-                                <td>${response["data"][index]["sick_name"]}</td>
-                                <td>${response["data"][index]["doctor"]}</td>
-                                <td>${response["data"][index]["medical"]}</td>
-                                <td>${today}</td>
-                                <td>${response["data"][index]["status"]}</td>
-                            </tr>`
-                $("#row_data").append(record)
+            }else{
+                
+                $("#errors").text(`${response["message"]}`);
+                $("#error_alert").show();
+
+                $("#error_alert").fadeTo(5000, 4000).slideUp(500, function () {
+                    $("#error_alert").slideUp(500);
+                });
+                
             }
+
             disable_loader();
         },
         error: function (error) {
@@ -569,7 +587,6 @@ $("#get_report").click(function () {
         }
     });
 });
-
 
 
 
