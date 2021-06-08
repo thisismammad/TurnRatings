@@ -252,7 +252,7 @@ def admin_login(input):
                     cities.append(city)
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'turn':
-            date = datetime.date.today() + datetime.timedelta(days=+1)
+            date = datetime.date.today()
             cites = []
             for city in City.query.all():
                 if city.status == 1:
@@ -325,7 +325,7 @@ def admin_login(input):
         elif input == 'turn':
             medical = Medical.query.filter_by(id=em.medical).first()
             city = City.query.filter_by(id=medical.city).first()
-            date = datetime.date.today() + datetime.timedelta(days=+1)
+            date = datetime.date.today()
             specialties = []
             if Doctor.query.filter_by(medical=medical.id):
                 for doctor in Doctor.query.filter_by(medical=medical.id):
@@ -364,7 +364,7 @@ def admin_login(input):
         elif input == 'turn':
             medical = Medical.query.filter_by(id=em.medical).first()
             city = City.query.filter_by(id=medical.city).first()
-            date = datetime.date.today() + datetime.timedelta(days=+1)
+            date = datetime.date.today()
             specialties = []
             if Doctor.query.filter_by(medical=medical.id):
                 for doctor in Doctor.query.filter_by(medical=medical.id):
@@ -1380,7 +1380,8 @@ def add_turn_user():
                                 if sick:
                                     turn = Turn(sick=sick.id,
                                                 doctor=doctor.id,
-                                                medical=int(request.form['medical']))
+                                                medical=int(request.form['medical']),
+                                                date = datetime.date.today())
 
                                     sick.phone = phone
                                     db.session.add(turn)
@@ -1397,7 +1398,8 @@ def add_turn_user():
                                     get_sick = Sick.query.filter_by(NC=NC).first()
                                     turn = Turn(sick=get_sick.id,
                                                 doctor=doctor.id,
-                                                medical=int(request.form['medical']))
+                                                medical=int(request.form['medical']),
+                                                date = datetime.date.today())
                                     db.session.add(turn)
                                     doctor.daily_capacity = doctor.daily_capacity - 1
                                     db.session.commit()
