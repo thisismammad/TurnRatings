@@ -31,7 +31,7 @@
                     </div>
                     <div class="form-group  col-md-4 col-12">
                         <label>کد ملی :</label>
-                        <input type="text" class="form-control" name="NC" required>
+                        <input type="text" id="numeric" maxlength="10" class="form-control" name="NC" required>
 
                     </div>
                     <div class="form-group  col-md-4 col-12">
@@ -44,7 +44,7 @@
                     </div>
                     <div class="form-group col-md-4 col-12">
                         <label>موبایل:</label>
-                        <input type="tel" class="form-control" name="phone" required>
+                        <input type="text" id="numeric1" maxlength="11" class="form-control" name="phone" required>
                     </div>
                     {% if values['access_level'] == 1 %}
                         <div class="form-group col-md-4 col-12">

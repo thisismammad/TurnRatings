@@ -48,7 +48,7 @@
 
                                             <div class="form-group col-md-6 col-12">
                                                 <label>شماره تماس:</label>
-                                                <input type="text" class="form-control" name="phone" required>
+                                                <input type="text" maxlength="11" id="numeric" class="form-control" name="phone" required>
                                             </div>
                                             <div class="form-group col-md-6 col-12">
                                                 <label>شهر:</label>
@@ -151,7 +151,7 @@
 
                                                 <div class="form-group col-md-6 col-12">
                                                     <label>شماره تماس:</label>
-                                                    <input type="text" class="form-control"
+                                                    <input type="text"  id="numeric1" maxlength="11" class="form-control"
                                                            value="{{ medical["phone"] }}" name="new_phone" required>
                                                 </div>
                                                 <div class="form-group col-md-6 col-12">

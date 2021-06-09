@@ -153,7 +153,8 @@ def admin_login(input):
                                  "NC": doctor.NC,
                                  "phone": '0' + str(doctor.phone),
                                  "medical": medical.name + '-' + city.name,
-                                 "speciality": sp.name})
+                                 "speciality": sp.name,
+                                 "daily_capacity" : doctor.daily_capacity})
             specialties = []
             for speciality in Specialty.query.all():
                 if speciality.status == 1:
@@ -294,7 +295,8 @@ def admin_login(input):
                                  "NC": doctor.NC,
                                  "phone": '0' + str(doctor.phone),
                                  "medical": medical.name,
-                                 "speciality": sp.name})
+                                 "speciality": sp.name,
+                                 "daily_capacity" : doctor.daily_capacity})
             return render_template('admin-' + input + '.html', values=locals())
         elif input == 'reception':
             data.clear()
@@ -914,6 +916,7 @@ def edit_doctor(doctor_id):
                 char.isdigit() for char in request.form['new_last_name']) \
                     or not request.form['new_NC'] \
                     or not request.form['new_phone'] \
+                    or not request.form['new_daily_capacity'] \
                     or not request.form['new_specialty'] \
                     or not request.form['new_medical']:
                 flash('پر کردن تمام فیلد ها ضروری است.', category='danger')
@@ -926,6 +929,8 @@ def edit_doctor(doctor_id):
                         phone = int(request.form['new_phone'])
                         if len(str(NC)) == 10:
                             if len(str(phone)) == 10:
+                                new_daily_capacity = int(request.form['new_daily_capacity'])
+                                print(new_daily_capacity)
                                 new_doctor = Doctor.query.filter_by(id=int(doctor_id)).first()
                                 comparison_doctor = Doctor(id=int(doctor_id),
                                                            name=request.form['new_name'],
@@ -933,6 +938,7 @@ def edit_doctor(doctor_id):
                                                            NC=NC,
                                                            phone=phone,
                                                            specialty=request.form['new_medical'],
+                                                           daily_capacity=new_daily_capacity,
                                                            medical=request.form['new_specialty'])
                                 if not new_doctor == comparison_doctor:
                                     new_doctor.name = request.form["new_name"]
@@ -941,6 +947,7 @@ def edit_doctor(doctor_id):
                                     new_doctor.phone = phone
                                     new_doctor.medical = int(request.form["new_medical"])
                                     new_doctor.specialty = int(request.form["new_specialty"])
+                                    new_doctor.daily_capacity=new_daily_capacity
                                     db.session.commit()
                                     flash('اطلاعات با موفقیت ثبت شد', 'success')
                                     return redirect(url_for('admin_login', input='doctor'))

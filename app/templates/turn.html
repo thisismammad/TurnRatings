@@ -75,7 +75,7 @@
 
                 <div class="form-group">
                     <label>موبایل:</label>
-                    <input type="tel" class="form-control" name="phone" required>
+                    <input type="tel" maxlength="11" id="phone" class="form-control" name="phone" required>
                 </div>
 
                 <div class="form-group">
@@ -119,4 +119,11 @@
 <script src="{{ url_for('static',filename='js/jquery-3.5.1.slim.min.js') }}"></script>
 {#<script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>#}
 <script src="{{ url_for('static',filename='js/script.js') }}"></script>
+<script>
+    $(document).ready(function() {
+    $("#phone").inputFilter(function(value) {
+      return /^\d*$/.test(value);    // Allow digits only, using a RegExp
+    });
+  });
+</script>
 </html>

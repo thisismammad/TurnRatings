@@ -1,9 +1,9 @@
 
 function active_loader() {
-  $(".main-loader").css('display', 'flex')
+    $(".main-loader").css('display', 'flex')
 }
 function disable_loader() {
-  $(".main-loader").css('display', 'none')
+    $(".main-loader").css('display', 'none')
 }
 
 
@@ -14,7 +14,7 @@ $("#select_city").change(function () {
     let value = $(this).val();
     $.ajax({
         url: '/load-medicals',
-        data: {"city_id": value},
+        data: { "city_id": value },
         type: 'POST',
         success: function (response) {
             console.log("---------------load-medicals--------------");
@@ -41,7 +41,7 @@ $("#select_medical").change(function () {
     let value = $(this).val();
     $.ajax({
         url: '/load-specialties',
-        data: {"medical_id": value},
+        data: { "medical_id": value },
         type: 'POST',
         success: function (response) {
             console.log("---------------load-specialties--------------");
@@ -68,7 +68,7 @@ $("#select_specialties").change(function () {
     let medical_id = $("#select_medical").val();
     $.ajax({
         url: '/load-doctors',
-        data: {"sp_id": sp_id, "medical_id": medical_id},
+        data: { "sp_id": sp_id, "medical_id": medical_id },
         type: 'POST',
         success: function (response) {
             console.log("--------------- load-doctors --------------");
@@ -99,7 +99,7 @@ $("#select_city_report").change(function () {
     let city_id = $(this).val();
     $.ajax({
         url: '/load-data-for-report',
-        data: {"city_id": city_id},
+        data: { "city_id": city_id },
         type: 'POST',
         success: function (response) {
             console.log("---------------load-medicals--------------");
@@ -177,7 +177,7 @@ $("#select_medical_report").change(function () {
     let medical_id = $(this).val();
     $.ajax({
         url: '/load-data-for-report',
-        data: {"medical_id": medical_id},
+        data: { "medical_id": medical_id },
         type: 'POST',
         success: function (response) {
             console.log("---------------load-specialties--------------");
@@ -259,13 +259,13 @@ $("#select_medical_report").change(function () {
         }
     });
 })
-;
+    ;
 
 $("#select_specialties_report").change(function () {
     let sp_id = $(this).val();
     $.ajax({
         url: '/load-data-for-report',
-        data: {"sp_id": sp_id},
+        data: { "sp_id": sp_id },
         type: 'POST',
         success: function (response) {
             console.log("--------------- load-doctors --------------");
@@ -318,7 +318,7 @@ $("#select_doctor_report").change(function () {
     console.log(doctor_id)
     $.ajax({
         url: '/load-data-for-report',
-        data: {"doctor_id": doctor_id},
+        data: { "doctor_id": doctor_id },
         type: 'POST',
         success: function (response) {
             console.log("--------------- load-doctors --------------");
@@ -411,7 +411,7 @@ $("#select_position").change(function () {
     let positions = $(this).val();
     $.ajax({
         url: '/load-medicals-admin',
-        data: {"medical_id": positions},
+        data: { "medical_id": positions },
         type: 'POST',
         success: function (response) {
             console.log("---------------load-medicals--------------");
@@ -441,7 +441,7 @@ $(".select_position_edit").change(function () {
     let positions = $(this).val();
     $.ajax({
         url: '/load-medicals-admin',
-        data: {"medical_id": positions},
+        data: { "medical_id": positions },
         type: 'POST',
         success: function (response) {
             console.log("---------------load-medicals--------------");
@@ -540,7 +540,7 @@ $("#get_report").click(function () {
 
 
 
-            if(response["message"] == ""){
+            if (response["message"] == "") {
 
                 for (const index in response["data"]) {
                     var today = new Date(response["data"][index]["date"]);
@@ -568,15 +568,15 @@ $("#get_report").click(function () {
                                 </tr>`
                     $("#row_data").append(record)
                 }
-            }else{
-                
+            } else {
+
                 $("#errors").text(`${response["message"]}`);
                 $("#error_alert").show();
 
                 $("#error_alert").fadeTo(5000, 4000).slideUp(500, function () {
                     $("#error_alert").slideUp(500);
                 });
-                
+
             }
 
             disable_loader();
@@ -589,4 +589,77 @@ $("#get_report").click(function () {
 });
 
 
+(function ($) {
+    $.fn.inputFilter = function (inputFilter) {
+        return this.on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
+            if (inputFilter(this.value)) {
+                this.oldValue = this.value;
+                this.oldSelectionStart = this.selectionStart;
+                this.oldSelectionEnd = this.selectionEnd;
+            } else if (this.hasOwnProperty("oldValue")) {
+                this.value = this.oldValue;
+                this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+            } else {
+                this.value = "";
+            }
+        });
+    };
+}(jQuery));
 
+
+
+$('#numeric').on('input', function () {
+    $(document).ready(function () {
+        $("#numeric").inputFilter(function (value) {
+            return /^\d*$/.test(value);    // Allow digits only, using a RegExp
+        });
+    });
+});
+
+$('#numeric1').on('input', function () {
+    $(document).ready(function () {
+        $("#numeric1").inputFilter(function (value) {
+            return /^\d*$/.test(value);    // Allow digits only, using a RegExp
+        });
+    });
+});
+
+$('#numeric2').on('input', function () {
+    $(document).ready(function () {
+        $("#numeric2").inputFilter(function (value) {
+            return /^(?:[1-9]|[1-4][0-9]|50|)$/.test(value);    // Allow digits only, using a RegExp
+        });
+    });
+});
+
+$('#numeric3').on('input', function () {
+    $(document).ready(function () {
+        $("#numeric3").inputFilter(function (value) {
+            return /^\d*$/.test(value);    // Allow digits only, using a RegExp
+        });
+    });
+});
+
+$('#numeric4').on('input', function () {
+    $(document).ready(function () {
+        $("#numeric4").inputFilter(function (value) {
+            return /^\d*$/.test(value);    // Allow digits only, using a RegExp
+        });
+    });
+});
+
+$('#numeric5').on('input', function () {
+    $(document).ready(function () {
+        $("#numeric5").inputFilter(function (value) {
+            return /^(?:[1-9]|[1-4][0-9]|50|)$/.test(value);    // Allow digits only, using a RegExp
+        });
+    });
+});
+
+$('#numeric6').on('input', function () {
+    $(document).ready(function () {
+        $("#numeric6").inputFilter(function (value) {
+            return /^\d*$/.test(value);    // Allow digits only, using a RegExp
+        });
+    });
+});

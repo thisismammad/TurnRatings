@@ -53,7 +53,7 @@
         </div>
         <form action=" {{ url_for( 'panel' ) }}" method="POST">
             <div class="form">
-                <input type="text" class="form-control form__input" name="NC" required
+                <input type="text" id="nc" class="form-control form__input" name="NC" maxlength="10" required
                        placeholder="کد ملی خود را وارد کنید...">
                 <input type="submit" class="btn btn-success from-buttom" value="ورود به پنل">
             </div>
@@ -76,4 +76,11 @@
 <script src="{{ url_for('static',filename='js/jquery-3.5.1.slim.min.js') }}"></script>
 <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
 <script src="{{ url_for('static',filename='js/script.js') }}"></script>
+<script>
+    $(document).ready(function() {
+    $("#nc").inputFilter(function(value) {
+      return /^\d*$/.test(value);    // Allow digits only, using a RegExp
+    });
+  });
+</script>
 </html>

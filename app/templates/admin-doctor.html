@@ -1,114 +1,115 @@
 {% extends 'admin-panel.html' %}
 
 {% block content %}
-    <div class="border bg-light container">
-        {% for category , message in get_flashed_messages(with_categories = true) %}
-            {% if category == "success" %}
-                <div id="alert" class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% elif category == "danger" %}
-                <div id="alert" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endif %}
-        {% endfor %}
-        <div class="header">
-            <h4 class="header-title"> پزشکان</h4>
-        </div>
-        <div class="border bg-light content">
-            <div class="operation">
-                {% if values['access_level'] == 1 %}
-                    <ul class="operation-group">
-                        <li class="operation-item">
-                            <div class="option-logo">
-                                <img class="img" src="{{ url_for('static',filename='assets/logo/plus.png') }}">
-                            </div>
-                            <a href="#" class="operation-item__link" data-toggle="modal"
-                               data-target="#modal-add-item">افزودن</a>
-                            <form action="{{ url_for('add_doctor') }}" method="POST">
-                                <div class="modal fade" id="modal-add-item" tabindex="-1" role="dialog"
-                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog col-6" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">افزودن پزشک</h5>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="form-group col-md-6 col-12">
-                                                    <label>کدملی :</label>
-                                                    <input type="text" class="form-control" name="NC" required>
-                                                </div>
-
-                                                <div class="form-group col-md-6 col-12">
-                                                    <label>نام:</label>
-                                                    <input type="text" class="form-control" name="name" required>
-                                                </div>
-
-                                                <div class="form-group col-md-6 col-12">
-                                                    <label>نام خانوادگی:</label>
-                                                    <input type="text" class="form-control" name="last_name" required>
-                                                </div>
-
-                                                <div class="form-group col-md-6 col-12">
-                                                    <label>شماره تماس:</label>
-                                                    <input type="text" class="form-control" name="phone" required>
-                                                </div>
-
-                                                <div class="form-group col-md-6 col-12">
-                                                    <label>تعداد ویزیت در روز:</label>
-                                                    <input type="text" class="form-control" name="daily_capacity"
-                                                           value="10"
-                                                           required>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label>تخصص :</label>
-                                                    <select class="form-control" name="speciality" required>
-                                                        <option value="0" selected hidden>تخصص را انتخاب کنید ...
-                                                        </option>
-                                                        {% for sp in values['specialties'] %}
-                                                            <option value="{{ sp.id }}">{{ sp.name }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>مرکز درمانی :</label>
-                                                    <select class="form-control" name="medical" required>
-                                                        <option value="0" selected hidden>مرکز درمانی را انتخاب
-                                                            کنید ...
-                                                        </option>
-                                                        {% for medical in values['medicals'] %}
-                                                            <option value="{{ medical["medical_id"] }}">{{ medical["medical_name"] }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">بستن صفحه
-                                                </button>
-                                                <button type="submit" class="btn btn-primary">ذخیره اطلاعات</button>
-                                            </div>
+<div class="border bg-light container">
+    {% for category , message in get_flashed_messages(with_categories = true) %}
+    {% if category == "success" %}
+    <div id="alert" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% elif category == "danger" %}
+    <div id="alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    {% endfor %}
+    <div class="header">
+        <h4 class="header-title"> پزشکان</h4>
+    </div>
+    <div class="border bg-light content">
+        <div class="operation">
+            {% if values['access_level'] == 1 %}
+            <ul class="operation-group">
+                <li class="operation-item">
+                    <div class="option-logo">
+                        <img class="img" src="{{ url_for('static',filename='assets/logo/plus.png') }}">
+                    </div>
+                    <a href="#" class="operation-item__link" data-toggle="modal"
+                        data-target="#modal-add-item">افزودن</a>
+                    <form action="{{ url_for('add_doctor') }}" method="POST">
+                        <div class="modal fade" id="modal-add-item" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog col-6" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">افزودن پزشک</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group col-md-6 col-12">
+                                            <label>کدملی :</label>
+                                            <input type="text" id="numeric" maxlength="10" class="form-control"
+                                                name="NC" required>
                                         </div>
+
+                                        <div class="form-group col-md-6 col-12">
+                                            <label>نام:</label>
+                                            <input type="text" class="form-control" name="name" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6 col-12">
+                                            <label>نام خانوادگی:</label>
+                                            <input type="text" class="form-control" name="last_name" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6 col-12">
+                                            <label>شماره تماس:</label>
+                                            <input type="phote" id="numeric1" maxlength="11" class="form-control"
+                                                name="phone" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6 col-12">
+                                            <label>تعداد ویزیت در روز:</label>
+                                            <input type="text" class="form-control" id="numeric2" name="daily_capacity"
+                                                value="10" maxlength="2" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>تخصص :</label>
+                                            <select class="form-control" name="speciality" required>
+                                                <option value="0" selected hidden>تخصص را انتخاب کنید ...
+                                                </option>
+                                                {% for sp in values['specialties'] %}
+                                                <option value="{{ sp.id }}">{{ sp.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>مرکز درمانی :</label>
+                                            <select class="form-control" name="medical" required>
+                                                <option value="0" selected hidden>مرکز درمانی را انتخاب
+                                                    کنید ...
+                                                </option>
+                                                {% for medical in values['medicals'] %}
+                                                <option value="{{ medical[" medical_id"] }}">{{ medical["medical_name"]
+                                                    }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن صفحه
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">ذخیره اطلاعات</button>
                                     </div>
                                 </div>
-                            </form>
-                        </li>
-                    </ul>
-                {% endif %}
-            </div>
-            <div class="result-container">
+                            </div>
+                        </div>
+                    </form>
+                </li>
+            </ul>
+            {% endif %}
+        </div>
+        <div class="result-container">
 
-                <table id="data-table" class="table table-striped">
-                    <thead class="thead-dark">
+            <table id="data-table" class="table table-striped">
+                <thead class="thead-dark">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">کد ملی</th>
@@ -117,136 +118,142 @@
                         <th scope="col">تخصص</th>
                         <th scope="col">شماره تماس</th>
                         {% if values['access_level'] == 1 %}
-                            <th scope="col">مرکز درمانی</th>
+                        <th scope="col">مرکز درمانی</th>
                         <th scope="col">عملیات</th>
                         {% endif %}
                     </tr>
-                    </thead>
-                    <tbody>
+                </thead>
+                <tbody>
                     {% for doctor in values['data'] %}
-                        <tr>
-                            <th scope="row">{{ loop.index }}</th>
-                            <td>{{ doctor['NC'] }}</td>
-                            <td>{{ doctor['name'] }}</td>
-                            <td>{{ doctor['last_name'] }}</td>
-                            <td>{{ doctor['speciality'] }}</td>
-                            <td>{{ doctor['phone'] }}</td>
-                            {% if values['access_level'] == 1 %}
-                                <td>{{ doctor['medical'] }}</td>
-                                <td>
-                                    <a style="text-decoration: none;" href="#" data-toggle="modal"
-                                       data-target="#delete-{{ doctor["id"] }}">حذف</a>
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ doctor['NC'] }}</td>
+                        <td>{{ doctor['name'] }}</td>
+                        <td>{{ doctor['last_name'] }}</td>
+                        <td>{{ doctor['speciality'] }}</td>
+                        <td>{{ doctor['phone'] }}</td>
+                        {% if values['access_level'] == 1 %}
+                        <td>{{ doctor['medical'] }}</td>
+                        <td>
+                            <a style="text-decoration: none;" href="#" data-toggle="modal"
+                                data-target="#delete-{{ doctor[" id"] }}">حذف</a>
 
-                                    <span>|</span>
+                            <span>|</span>
 
-                                    <a style="text-decoration: none;" href="#" data-toggle="modal"
-                                       data-target="#edit-{{ doctor["id"] }}">ویرایش</a>
+                            <a style="text-decoration: none;" href="#" data-toggle="modal"
+                                data-target="#edit-{{ doctor[" id"] }}">ویرایش</a>
 
-                                    <form action="{{ url_for('delete_doctor', doctor_id = doctor["id"]) }}"
-                                          method="POST">
-                                        <div class="modal fade" id="delete-{{ doctor["id"] }}" tabindex="-1"
-                                             role="dialog"
-                                             aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">حذف پزشک</h5>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        ایا از حذف این آیتم اطمینان دارید؟
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal">
-                                                            لغو
-                                                        </button>
-                                                        <button type="submit" class="btn btn-danger">حذف</button>
-                                                    </div>
-                                                </div>
+                            <form action="{{ url_for('delete_doctor', doctor_id = doctor[" id"]) }}" method="POST">
+                                <div class="modal fade" id="delete-{{ doctor[" id"] }}" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">حذف پزشک</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                ایا از حذف این آیتم اطمینان دارید؟
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    لغو
+                                                </button>
+                                                <button type="submit" class="btn btn-danger">حذف</button>
                                             </div>
                                         </div>
-                                    </form>
+                                    </div>
+                                </div>
+                            </form>
 
 
-                                    <form action="{{ url_for('edit_doctor', doctor_id = doctor["id"]) }}" method="POST">
-                                        <div class="modal fade" id="edit-{{ doctor["id"] }}" tabindex="-1" role="dialog"
-                                             aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog col-6" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">ویرایش پزشک</h5>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form-group col-md-6 col-12">
-                                                            <label>نام:</label>
-                                                            <input type="text" class="form-control" name="new_name"
-                                                                   value="{{ doctor.name }}" required>
-                                                        </div>
+                            <form action="{{ url_for('edit_doctor', doctor_id = doctor[" id"]) }}" method="POST">
+                                <div class="modal fade" id="edit-{{ doctor[" id"] }}" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog col-6" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">ویرایش پزشک</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="form-group col-md-6 col-12">
+                                                    <label>کدملی :</label>
+                                                    <input type="text" id="numeric3" maxlength="10" class="form-control" name="new_NC"
+                                                        value="{{ doctor.NC }}" required>
+                                                </div>
+                                                <div class="form-group col-md-6 col-12">
+                                                    <label>نام:</label>
+                                                    <input type="text" class="form-control" name="new_name"
+                                                        value="{{ doctor.name }}" required>
+                                                </div>
 
-                                                        <div class="form-group col-md-6 col-12">
-                                                            <label>نام خانوادگی:</label>
-                                                            <input type="text" class="form-control" name="new_last_name"
-                                                                   value="{{ doctor.last_name }}" required>
-                                                        </div>
+                                                <div class="form-group col-md-6 col-12">
+                                                    <label>نام خانوادگی:</label>
+                                                    <input type="text" class="form-control" name="new_last_name"
+                                                        value="{{ doctor.last_name }}" required>
+                                                </div>
 
-                                                        <div class="form-group col-md-6 col-12">
-                                                            <label>شماره تماس:</label>
-                                                            <input type="text" class="form-control" name="new_phone"
-                                                                   value="{{ doctor.phone }}" required>
-                                                        </div>
+                                                <div class="form-group col-md-6 col-12">
+                                                    <label>شماره تماس:</label>
+                                                    <input type="text" maxlength="11" id="numeric4" class="form-control" name="new_phone"
+                                                        value="{{ doctor.phone }}" required>
+                                                </div>
 
-                                                        <div class="form-group col-md-6 col-12">
-                                                            <label>کدملی :</label>
-                                                            <input type="text" class="form-control" name="new_NC"
-                                                                   value="{{ doctor.NC }}" required>
-                                                        </div>
 
-                                                        <div class="form-group col-12">
-                                                            <label>تخصص :</label>
-                                                            <select class="form-control" name="new_specialty" required>
-                                                                {% for sp in values['specialties'] %}
-                                                                    {% if sp.id == doctor.specialty %}
-                                                                        <option value="{{ sp.id }} "
-                                                                                selected>{{ sp.name }}</option>
-                                                                    {% else %}
-                                                                        <option value="{{ sp.id }} ">{{ sp.name }}</option>
-                                                                    {% endif %}
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group col-12">
-                                                            <label>مرکز درمانی :</label>
-                                                            <select class="form-control" name="new_medical" required>
-                                                                {% for medical in values['medicals'] %}
-                                                                    {% if medical.id == doctor.medical %}
-                                                                        <option value="{{ medical["medical_id"] }} "
-                                                                                selected>{{ medical["medical_name"] }}</option>
-                                                                    {% else %}
-                                                                        <option value="{{ medical["medical_id"] }} ">{{ medical["medical_name"] }}</option>
-                                                                    {% endif %}
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal">بستن صفحه
-                                                        </button>
-                                                        <button type="submit" class="btn btn-primary">ذخیره اطلاعات
-                                                        </button>
-                                                    </div>
+                                                <div class="form-group col-md-6 col-12">
+                                                    <label>تعداد ویزیت در روز:</label>
+                                                    <input type="text" maxlength="2" id="numeric5" id="daily_capacity" class="form-control"
+                                                        name="new_daily_capacity" value="{{ doctor.daily_capacity }}"
+                                                        required>
+                                                </div>
+
+                                                <div class="form-group col-12">
+                                                    <label>تخصص :</label>
+                                                    <select class="form-control" name="new_specialty" required>
+                                                        {% for sp in values['specialties'] %}
+                                                        {% if sp.id == doctor.specialty %}
+                                                        <option value="{{ sp.id }} " selected>{{ sp.name }}</option>
+                                                        {% else %}
+                                                        <option value="{{ sp.id }} ">{{ sp.name }}</option>
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-12">
+                                                    <label>مرکز درمانی :</label>
+                                                    <select class="form-control" name="new_medical" required>
+                                                        {% for medical in values['medicals'] %}
+                                                        {% if medical.id == doctor.medical %}
+                                                        <option value="{{ medical[" medical_id"] }} "
+                                                                                selected>{{ medical[" medical_name"]
+                                                            }}</option>
+                                                            {% else %}
+                                                        <option value="{{ medical[" medical_id"] }} ">{{ medical["
+                                                            medical_name"] }}</option>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                    </select>
                                                 </div>
                                             </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">بستن صفحه
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">ذخیره اطلاعات
+                                                </button>
+                                            </div>
                                         </div>
-                                    </form>
-                                </td>
-                            {% endif %}
-                        </tr>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
+                        {% endif %}
+                    </tr>
                     {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
-        <div class="footer"></div>
     </div>
+    <div class="footer"></div>
+</div>
+
 {% endblock %}

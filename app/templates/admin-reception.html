@@ -2,151 +2,144 @@
 
 {% block content %}
 
-    <div class="border bg-light container">
-        {% for category , message in get_flashed_messages(with_categories = true) %}
-            {% if category == "success" %}
-                <div id="alert" class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% elif category == "danger" %}
-                <div id="alert" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endif %}
-        {% endfor %}
-        <div class="header">
-            <h4 class="header-title">پذیرش بیمار</h4>
-        </div>
+<div class="border bg-light container">
+    {% for category , message in get_flashed_messages(with_categories = true) %}
+    {% if category == "success" %}
+    <div id="alert" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% elif category == "danger" %}
+    <div id="alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    {% endfor %}
+    <div class="header">
+        <h4 class="header-title">پذیرش بیمار</h4>
+    </div>
 
-        <div class="border bg-light content">
-            <div class="d-flex flex-column p-2">
-                <form action="{{ url_for('search_sick') }}" method="POST">
-                    <div class="row d-flex">
+    <div class="border bg-light content">
+        <div class="d-flex flex-column p-2">
+            <form action="{{ url_for('search_sick') }}" method="POST">
+                <div class="row d-flex">
 
-                        <div class="input-group col-md-6 col-12">
-                            <input type="text" name="sick_NC" class="form-control"
-                                   placeholder="کد ملی بیمار را وارد کنید"
-                                   required>
-                            <div class="input-group-append">
-                                <input type="submit" class="btn btn-success from-buttom" value="جستجو">
-                            </div>
+                    <div class="input-group col-md-6 col-12">
+                        <input type="text" id="numeric" maxlength="10" name="sick_NC" class="form-control" placeholder="کد ملی بیمار را وارد کنید"
+                            required>
+                        <div class="input-group-append">
+                            <input type="submit" class="btn btn-success from-buttom" value="جستجو">
                         </div>
                     </div>
-                </form>
-                {% if values['is_search'] == True %}
-                    <form id="edit_sick" action="{{ url_for('edit_sick' , sick_id = values['sick'].id) }}"
-                          method="POST">
-                        <div class="row">
-                            <div class="form-group col-md-4 col-12">
-                                <label>کد ملی :</label>
-                                <input type="text" name="new_NC" value="{{ values['sick'].NC }}" required
-                                       class="form-control">
-                            </div>
-
-                            <div class="form-group col-md-4 col-12">
-                                <label>نام :</label>
-                                {% if values['sick'].name == none %}
-                                    <input type="text" name="new_name"
-                                           required class="form-control">
-                                {% else %}
-                                    <input type="text" name="new_name" value="{{ values['sick'].name }}"
-                                           required class="form-control">
-                                {% endif %}
-                            </div>
-
-                            <div class="form-group col-md-4 col-12">
-                                <label>نام خانوادگی :</label>
-                                {% if values['sick'].last_name == none %}
-                                    <input type="text" name="new_last_name"
-                                           required class="form-control">
-                                {% else %}
-                                    <input type="text" name="new_last_name" value="{{ values['sick'].last_name }}"
-                                           required class="form-control">
-                                {% endif %}
-                            </div>
-
-                            <div class="form-group col-md-4 col-12">
-                                <label>شماره تماس :</label>
-                                {% if values['sick'].phone == none %}
-                                    <input type="text" name="new_phone"
-                                           required class="form-control">
-                                {% else %}
-                                    <input type="text" name="new_phone" value="0{{ values['sick'].phone }}"
-                                           required class="form-control">
-                                {% endif %}
-                            </div>
-                            <div class="form-group col-md-4 col-12 d-flex align-items-end">
-                                <input type="submit" class="btn btn-danger" value="بروز رسانی اطلاعات">
-                            </div>
-                        </div>
-                    </form>
-                {% endif %}
-
+                </div>
+            </form>
+            {% if values['is_search'] == True %}
+            <form id="edit_sick" action="{{ url_for('edit_sick' , sick_id = values['sick'].id) }}" method="POST">
                 <div class="row">
-                    <div class="result-container">
+                    <div class="form-group col-md-4 col-12">
+                        <label>کد ملی :</label>
+                        <input type="text" id="numeric1" maxlength="10" name="new_NC" value="{{ values['sick'].NC }}" required class="form-control">
+                    </div>
 
-                        <table id="data-table" class="table table-striped">
-                            <thead class="thead-dark">
+                    <div class="form-group col-md-4 col-12">
+                        <label>نام :</label>
+                        {% if values['sick'].name == none %}
+                        <input type="text" name="new_name" required class="form-control">
+                        {% else %}
+                        <input type="text" name="new_name" value="{{ values['sick'].name }}" required
+                            class="form-control">
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group col-md-4 col-12">
+                        <label>نام خانوادگی :</label>
+                        {% if values['sick'].last_name == none %}
+                        <input type="text" name="new_last_name" required class="form-control">
+                        {% else %}
+                        <input type="text" name="new_last_name" value="{{ values['sick'].last_name }}" required
+                            class="form-control">
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group col-md-4 col-12">
+                        <label>شماره تماس :</label>
+                        {% if values['sick'].phone == none %}
+                        <input type="text" name="new_phone" id="numeric3" maxlength="11" required class="form-control">
+                        {% else %}
+                        <input type="text" name="new_phone" value="0{{ values['sick'].phone }}" required
+                            class="form-control">
+                        {% endif %}
+                    </div>
+                    <div class="form-group col-md-4 col-12 d-flex align-items-end">
+                        <input type="submit" class="btn btn-danger" value="بروز رسانی اطلاعات">
+                    </div>
+                </div>
+            </form>
+            {% endif %}
+
+            <div class="row">
+                <div class="result-container">
+
+                    <table id="data-table" class="table table-striped">
+                        <thead class="thead-dark">
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">کد ملی بیمار</th>
                                 <th scope="col">تخصص</th>
                                 <th scope="col">پزشک</th>
                                 {% if values['access_level'] == 1 %}
-                                    <th scope="col">مرکز درمانی</th>
+                                <th scope="col">مرکز درمانی</th>
                                 {% endif %}
                                 <th scope="col">تاریخ</th>
                                 <th scope="col">وضعیت</th>
                                 <th scope="col">عملیات</th>
                             </tr>
-                            </thead>
-                            <tbody>
+                        </thead>
+                        <tbody>
                             {% for turn in values['data'] %}
-                                <tr>
-                                    <th scope="row">{{ loop.index }}</th>
-                                    <td>{{ turn["sick"] }}</td>
-                                    <td>{{ turn["speciality"] }}</td>
-                                    <td>{{ turn["doctor"] }}</td>
-                                    {% if values['access_level'] == 1 %}
-                                        <td>{{ turn["medical"] }}</td>
-                                    {% endif %}
-                                    <td>{{ turn["date"] }}</td>
-                                    {% if turn["status"] == 0 %}
-                                        <td>لغو شده</td>
-                                    {% elif turn["status"] == 1 %}
-                                        <td>انتظار</td>
-                                    {% elif turn["status"] == 2 %}
-                                        <td>انجام شده</td>
-                                    {% elif turn["status"] == 3 %}
-                                        <td>منقضی شده</td>
-                                    {% endif %}
-                                    {% if turn["status"] == 1 %}
-                                        <td>
-                                            <form action="{{ url_for('reception', turn_id= turn["id"]) }}"
-                                                  method="POST">
-                                                <input type="submit" class="btn btn-sm btn-info" value="پذیرش">
-                                                <input type="hidden" name="turn_id" class="btn btn-sm btn-info"
-                                                       value="{{ turn["id"] }}">
-                                            </form>
-                                        </td>
-                                    {% else %}
-                                        <td>-</td>
-                                    {% endif %}
-                                </tr>
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>{{ turn["sick"] }}</td>
+                                <td>{{ turn["speciality"] }}</td>
+                                <td>{{ turn["doctor"] }}</td>
+                                {% if values['access_level'] == 1 %}
+                                <td>{{ turn["medical"] }}</td>
+                                {% endif %}
+                                <td>{{ turn["date"] }}</td>
+                                {% if turn["status"] == 0 %}
+                                <td>لغو شده</td>
+                                {% elif turn["status"] == 1 %}
+                                <td>انتظار</td>
+                                {% elif turn["status"] == 2 %}
+                                <td>انجام شده</td>
+                                {% elif turn["status"] == 3 %}
+                                <td>منقضی شده</td>
+                                {% endif %}
+                                {% if turn["status"] == 1 %}
+                                <td>
+                                    <form action="{{ url_for('reception', turn_id= turn[" id"]) }}" method="POST">
+                                        <input type="submit" class="btn btn-sm btn-info" value="پذیرش">
+                                        <input type="hidden" name="turn_id" class="btn btn-sm btn-info" value="{{ turn["
+                                            id"] }}">
+                                    </form>
+                                </td>
+                                {% else %}
+                                <td>-</td>
+                                {% endif %}
+                            </tr>
                             {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-
-        <div class="footer"></div>
     </div>
+
+    <div class="footer"></div>
+</div>
 {% endblock %}

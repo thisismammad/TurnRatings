@@ -44,7 +44,7 @@
 
                                             <div class="form-group col-md-6 col-12">
                                                 <label>شماره پرسنلی:</label>
-                                                <input type="text" class="form-control" name="id" required>
+                                                <input type="text" id="numeric" maxlength="10" class="form-control" name="id" required>
                                             </div>
                                             <div class="form-group col-md-6 col-12">
                                                 <label>نام:</label>
@@ -58,12 +58,12 @@
 
                                             <div class="form-group col-md-6 col-12">
                                                 <label>شماره تماس:</label>
-                                                <input type="text" class="form-control" name="phone" required>
+                                                <input type="text" id="numeric1" maxlength="11" class="form-control" name="phone" required>
                                             </div>
 
                                             <div class="form-group col-md-6 col-12">
                                                 <label>کدملی :</label>
-                                                <input type="text" class="form-control" name="NC" required>
+                                                <input type="text" id="numeric3" maxlength="10" class="form-control" name="NC" required>
                                             </div>
 
                                             <div class="form-group col-12">
@@ -201,12 +201,12 @@
                                                     </div>
                                                     <div class="form-group col-md-6 col-12">
                                                         <label>شماره تماس:</label>
-                                                        <input type="text" class="form-control" name="new_phone"
+                                                        <input type="text" id="numeric4" maxlength="11" class="form-control" name="new_phone"
                                                                value="{{ user['phone'] }}" required>
                                                     </div>
                                                     <div class="form-group col-md-6 col-12">
                                                         <label>کدملی :</label>
-                                                        <input type="text" class="form-control" name="new_NC"
+                                                        <input type="text" id="numeric6" maxlength="10" class="form-control" name="new_NC"
                                                                value="{{ user['NC'] }}" required>
                                                     </div>
                                                     <div class="form-group col-12">
