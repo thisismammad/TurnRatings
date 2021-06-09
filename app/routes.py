@@ -107,6 +107,9 @@ def user_report():
             medical = Medical.query.filter_by(id=turn.medical).first()
             specialty = Specialty.query.filter_by(id=doctor.specialty).first()
             city = City.query.filter_by(id=medical.city).first()
+            if turn.date.date() < datetime.date.today():
+                    turn.status = 3
+                    db.session.commit()
             turns.append({"id": turn.id,
                           "sick": session.get("NC"),
                           "speciality": specialty.name,
