@@ -3,7 +3,6 @@ from app import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -144,7 +143,6 @@ class Specialty(db.Model):
     def __repr__(self):
         return f"Specialty('{self.id}','{self.name}')"
 
-
 def migrate():
     db.drop_all()
     db.create_all()
@@ -154,4 +152,4 @@ def migrate():
     user = User(id=em.id, password=generate_password_hash(str(em.NC)), access_level=em.position)
     db.session.add(user)
     db.session.commit()
-    print('Your default username is 1 and your default password is 1')
+    print('\ndefault username is "1" and your default password is "1".\n\nWarning! Be sure to change it\n\npy run.py\n')
